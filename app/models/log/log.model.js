@@ -1,27 +1,56 @@
-// const sql = require("../db.js");
-import db from "../db.js";
+// class Log {
+//   constructor(logItem) {
+//     this.title = logItem.title;
+//     this.description = logItem.description;
+//     this.id = logItem.id;
+//   }
+// }
 
-class Log {
-  constructor(logItem) {
-    this.title = logItem.title;
-    this.description = logItem.description;
-    this.id = logItem.id;
-  }
-}
+// Log.create = (newLog, result) => {
+//   db.getConnection((err, connection) => {
+//     console.log(err, connection);
+//     if (err) {
+//       return result(err);
+//     }
+//     connection.query("INSERT INTO logs SET ?", newLog, (err, res) => {
+//       if (err) {
+//         console.log("error: ", err);
+//         result(err, null);
+//         return;
+//       }
 
-Log.create = (newLog, result) => {
-  db.getConnection((err, connection) => {
-    db.query("INSERT INTO logs SET ?", newLog, (err, res) => {
-      if (err) {
-        console.log("error: ", err);
-        result(err, null);
-        return;
-      }
+//       console.log("created log: ", { id: res.insertId, ...newLog });
+//       result(null, { id: res.insertId, ...newLog });
+//     });
+//   });
+// };
 
-      console.log("created log: ", { id: res.insertId, ...newLog });
-      result(null, { id: res.insertId, ...newLog });
-    });
-  });
+export default (sequelize, Sequelize, DataTypes) => {
+  const Log = sequelize.define(
+    "log", // Model name
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      title: {
+        type: DataTypes.STRING,
+      },
+      description: {
+        type: DataTypes.STRING,
+      },
+    },
+    {
+      timestamps: true,
+      underscrored: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    }
+  );
+
+  return Log;
 };
 
 // Log.findById = (id, result) => {
@@ -126,5 +155,3 @@ Log.create = (newLog, result) => {
 //     result(null, res);
 //   });
 // };
-
-export default Log;

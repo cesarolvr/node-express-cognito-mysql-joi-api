@@ -30,18 +30,13 @@ export const create = (req, res) => {
     description,
   });
 
-  res.status(201).send({
-    message: "created with success",
-    value: logItem,
+  Log.create(logItem, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message: err.message || "Some error occurred while creating the Log.",
+      });
+    else res.send(data);
   });
-
-  // Log.create(logItem, (err, data) => {
-  //   if (err)
-  //     res.status(500).send({
-  //       message: err.message || "Some error occurred while creating the Log.",
-  //     });
-  //   else res.send(data);
-  // });
 };
 
 export const findAll = (req, res) => {
