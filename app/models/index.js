@@ -17,6 +17,13 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   },
 });
 
+try {
+  await sequelize.authenticate();
+  console.log("Connection with journeylog's DB has been established successfully.");
+} catch (error) {
+  console.error("Unable to connect the journeylog's DB:", error);
+}
+
 const db = {};
 
 db.Sequelize = Sequelize;

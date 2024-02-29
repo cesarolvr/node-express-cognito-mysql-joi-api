@@ -1,38 +1,11 @@
-// class Log {
-//   constructor(logItem) {
-//     this.title = logItem.title;
-//     this.description = logItem.description;
-//     this.id = logItem.id;
-//   }
-// }
-
-// Log.create = (newLog, result) => {
-//   db.getConnection((err, connection) => {
-//     console.log(err, connection);
-//     if (err) {
-//       return result(err);
-//     }
-//     connection.query("INSERT INTO logs SET ?", newLog, (err, res) => {
-//       if (err) {
-//         console.log("error: ", err);
-//         result(err, null);
-//         return;
-//       }
-
-//       console.log("created log: ", { id: res.insertId, ...newLog });
-//       result(null, { id: res.insertId, ...newLog });
-//     });
-//   });
-// };
-
 export default (sequelize, Sequelize, DataTypes) => {
-  const Log = sequelize.define(
-    "log", // Model name
+  return sequelize.define(
+    "Log",
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
+        autoIncrement: false,
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
       },
       title: {
@@ -49,8 +22,6 @@ export default (sequelize, Sequelize, DataTypes) => {
       updatedAt: "updated_at",
     }
   );
-
-  return Log;
 };
 
 // Log.findById = (id, result) => {
