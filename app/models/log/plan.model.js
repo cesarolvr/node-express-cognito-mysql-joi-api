@@ -1,6 +1,6 @@
 export default (sequelize, Sequelize, DataTypes) => {
-  const JourneyObject = sequelize.define(
-    "Journey",
+  const PlanObject = sequelize.define(
+    "Plan",
     {
       id: {
         type: DataTypes.STRING,
@@ -9,21 +9,22 @@ export default (sequelize, Sequelize, DataTypes) => {
         primaryKey: true,
       },
       name: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
-      status: {
-        type: DataTypes.STRING,
+      value: {
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
-      icon: {
-        type: DataTypes.STRING,
-      },
-      type: {
-        type: DataTypes.STRING,
+      duration: {
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
-      public: {
+      trialTime: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      automaticRenew: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
       },
@@ -36,9 +37,5 @@ export default (sequelize, Sequelize, DataTypes) => {
     }
   );
 
-  // UserObject.hasMany(JourneyObject);
-  // JourneyObject.hasMany(LogObject);
-  // PlanObject.hasMany(UserObject);
-
-  return JourneyObject;
+  return PlanObject;
 };

@@ -39,16 +39,10 @@ export const create = (req, res) => {
     });
 };
 
-// export const findAll = (req, res) => {
-//   const title = req.query.title;
+// export const getLogs = async (req, res) => {
+//   const logs = await Log.findAll()
 
-//   Log.getAll(title, (err, data) => {
-//     if (err)
-//       res.status(500).send({
-//         message: err.message || "Some error occurred while retrieving logs.",
-//       });
-//     else res.send(data);
-//   });
+//   console.log(res)
 // };
 
 // export const findOne = (req, res) => {

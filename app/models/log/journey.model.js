@@ -36,9 +36,5 @@ export default (sequelize, Sequelize, DataTypes) => {
     }
   );
 
-  // UserObject.hasMany(JourneyObject);
-  // JourneyObject.hasMany(LogObject);
-  // PlanObject.hasMany(UserObject);
-
   return JourneyObject;
 };
