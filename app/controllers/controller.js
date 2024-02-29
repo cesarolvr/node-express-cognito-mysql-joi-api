@@ -9,7 +9,7 @@ export const create = (req, res) => {
   const payload = req?.body;
 
   const logCreationSchema = Joi.object({
-    title: Joi.string().alphanum().min(3).max(20).required(),
+    title: Joi.string().min(3).max(20).required(),
     description: Joi.string().min(3).max(140),
   });
 
@@ -39,11 +39,13 @@ export const create = (req, res) => {
     });
 };
 
-// export const getLogs = async (req, res) => {
-//   const logs = await Log.findAll()
+export const getLogs = async (req, res) => {
+  const logs = await Log.findAll()
 
-//   console.log(res)
-// };
+  console.log('aaaa', logs)
+
+  res.send(logs);
+};
 
 // export const findOne = (req, res) => {
 //   Log.findById(req.params.id, (err, data) => {

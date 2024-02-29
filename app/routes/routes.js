@@ -1,4 +1,4 @@
-import { create } from "../controllers/controller.js";
+import { create, getLogs } from "../controllers/controller.js";
 import { Router } from "express";
 
 export default (app) => {
@@ -7,8 +7,8 @@ export default (app) => {
   // Create a new log
   router.post("/logs/create", create);
 
-  // // Retrieve all logs
-  // router.get("/logs", logs.findAll);
+  // Retrieve all logs
+  router.get("/logs", getLogs);
 
   // // Retrieve all published logs
   // router.get("/published", logs.findAllPublished);
