@@ -35,18 +35,26 @@ db.Sequelize = Sequelize;
 db.Op = Op;
 db.sequelize = sequelize;
 
-const LogObject = Log(sequelize, Sequelize, DataTypes);
 const UserObject = User(sequelize, Sequelize, DataTypes);
 const PlanObject = Plan(sequelize, Sequelize, DataTypes);
 const JourneyObject = Journey(sequelize, Sequelize, DataTypes);
+const LogObject = Log(sequelize, Sequelize, DataTypes);
 
-db.Logs = LogObject;
 db.User = UserObject;
 db.Plan = PlanObject;
 db.Journey = JourneyObject;
+db.Logs = LogObject;
 
-UserObject.hasMany(JourneyObject);
-JourneyObject.hasMany(LogObject);
-PlanObject.hasMany(UserObject);
+UserObject.hasMany(JourneyObject, {
+  foreignKey: "userId",
+});
+
+PlanObject.hasMany(UserObject, {
+  foreignKey: "planId",
+});
+
+JourneyObject.hasMany(LogObject, {
+  foreignKey: "journeyId",
+});
 
 export default db;

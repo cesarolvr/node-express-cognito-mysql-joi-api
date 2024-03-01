@@ -36,13 +36,5 @@ export default (sequelize, Sequelize, DataTypes) => {
     }
   );
 
-  // UserObject.methods.generateHash = function (password) {
-  //   return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-  // };
-
-  // UserObject.methods.validPassword = function (password) {
-  //   return bcrypt.compareSync(password, this.local.password);
-  // };
-
   return UserObject;
 };

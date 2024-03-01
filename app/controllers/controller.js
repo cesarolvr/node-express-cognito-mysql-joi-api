@@ -5,12 +5,32 @@ import { v4 as uuidv4 } from "uuid";
 import db from "../models/index.js";
 const Log = db.Logs;
 
-export const create = (req, res) => {
+// User
+export const createUser = (f) => f;
+export const deleteUser = (f) => f;
+export const getUser = (f) => f;
+export const updateUser = (f) => f;
+
+// Plan
+export const createPlan = (f) => f;
+export const deletePlan = (f) => f;
+export const getPlan = (f) => f;
+export const updatePlan = (f) => f;
+
+// Journeys
+export const createJourney = (f) => f;
+export const deleteJourney = (f) => f;
+export const getJourneys = (f) => f;
+export const updateJourney = (f) => f;
+
+// Logs
+export const createLog = (req, res) => {
   const payload = req?.body;
 
   const logCreationSchema = Joi.object({
     title: Joi.string().min(3).max(20).required(),
-    description: Joi.string().min(3).max(140),
+    description: Joi.string().allow("").min(3).max(140),
+    journeyId: Joi.string().required(),
   });
 
   const { error, value } = logCreationSchema.validate(payload);
@@ -27,10 +47,13 @@ export const create = (req, res) => {
     id: uuidv4(),
     title,
     description,
+    quality: 0,
   })
     .then((data) => {
       console.log(data);
-      res.send(data);
+      res.status(201).send({
+        message: "created",
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -39,12 +62,73 @@ export const create = (req, res) => {
     });
 };
 
-export const getLogs = async (req, res) => {
-  const logs = await Log.findAll()
+export const getLogs = (req, res) => {
+  Log.findAll()
+    .then((data) => {
+      console.log(data);
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while getting the Log.",
+      });
+    });
+};
 
-  console.log('aaaa', logs)
+export const deleteLog = (req, res) => {
+  const payload = req?.body;
+  Log.destroy({
+    where: { id: payload?.id },
+  })
+    .then((data) => {
+      console.log(data);
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while deleting the Log.",
+      });
+    });
+};
 
-  res.send(logs);
+export const updateLog = (req, res) => {
+  const payload = req?.body;
+
+  const logUpdateSchema = Joi.object({
+    id: Joi.required(),
+    title: Joi.string().min(3).max(20),
+    description: Joi.string().allow("").min(3).max(140),
+    quality: Joi.number(),
+  });
+
+  const { error, value } = logUpdateSchema.validate(payload);
+
+  if (error) {
+    return res.status(400).send({
+      message: error.message,
+    });
+  }
+
+  const validatedPayload = {
+    ...value,
+  };
+
+  console.log(validatedPayload);
+
+  Log.update(validatedPayload, {
+    where: { id: value?.id },
+  })
+    .then((data) => {
+      console.log(data);
+      res.status(200).send({
+        message: `log ${value.id} updated`,
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while deleting the Log.",
+      });
+    });
 };
 
 // export const findOne = (req, res) => {

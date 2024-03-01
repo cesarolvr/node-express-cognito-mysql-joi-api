@@ -1,16 +1,20 @@
-import { create, getLogs } from "../controllers/controller.js";
+import {
+  createLog,
+  getLogs,
+  deleteLog,
+  updateLog,
+} from "../controllers/controller.js";
 import { Router } from "express";
 
 export default (app) => {
   var router = Router();
 
-  // Create a new log
-  router.post("/logs/create", create);
-
-  // Retrieve all logs
+  // Logs
+  router.post("/logs/create", createLog);
   router.get("/logs", getLogs);
+  router.delete("/logs/delete", deleteLog);
+  router.put("/logs/update", updateLog);
 
-  // // Retrieve all published logs
   // router.get("/published", logs.findAllPublished);
 
   // // Retrieve a single log with id
@@ -18,9 +22,6 @@ export default (app) => {
 
   // // Update a log with id
   // router.put("/:id", logs.update);
-
-  // // Delete a log with id
-  // router.delete("/:id", logs.delete);
 
   // // Delete all logs
   // router.delete("/", logs.deleteAll);
