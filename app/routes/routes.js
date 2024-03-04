@@ -3,7 +3,7 @@ import {
   getLogs,
   deleteLog,
   updateLog,
-} from "../controllers/controller.js";
+} from "../controllers/log.controller.js";
 import { Router } from "express";
 
 export default (app) => {

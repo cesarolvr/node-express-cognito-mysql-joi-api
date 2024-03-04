@@ -7,7 +7,7 @@ import db from "./app/models/index.js";
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:8000",
+  origin: ENV.API,
 };
 
 app.use(cors(corsOptions));
@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const PORT = 8080;
 
-// database
+// Database
 db.sequelize.sync();
 
 app.listen(PORT, () => {

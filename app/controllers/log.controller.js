@@ -3,37 +3,21 @@ import { v4 as uuidv4 } from "uuid";
 
 // Model
 import db from "../models/index.js";
-const Log = db.Logs;
-
-// User
-export const createUser = (f) => f;
-export const deleteUser = (f) => f;
-export const getUser = (f) => f;
-export const updateUser = (f) => f;
-
-// Plan
-export const createPlan = (f) => f;
-export const deletePlan = (f) => f;
-export const getPlan = (f) => f;
-export const updatePlan = (f) => f;
-
-// Journeys
-export const createJourney = (f) => f;
-export const deleteJourney = (f) => f;
-export const getJourneys = (f) => f;
-export const updateJourney = (f) => f;
+const Log = db.Log;
 
 // Logs
 export const createLog = (req, res) => {
+  // check if this user has the permission to create log in this journey?
+
   const payload = req?.body;
 
-  const logCreationSchema = Joi.object({
+  const payloadChecked = Joi.object({
     title: Joi.string().min(3).max(20).required(),
     description: Joi.string().allow("").min(3).max(140),
     journeyId: Joi.string().required(),
   });
 
-  const { error, value } = logCreationSchema.validate(payload);
+  const { error, value } = payloadChecked.validate(payload);
 
   if (error) {
     return res.status(400).send({
@@ -63,6 +47,8 @@ export const createLog = (req, res) => {
 };
 
 export const getLogs = (req, res) => {
+  // check if this user has the permission to get this logs?
+
   Log.findAll()
     .then((data) => {
       console.log(data);
@@ -76,9 +62,26 @@ export const getLogs = (req, res) => {
 };
 
 export const deleteLog = (req, res) => {
+  // check if this user has the permission to delete this one?
+
   const payload = req?.body;
+
+  const payloadChecked = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { error, value } = payloadChecked.validate(payload);
+
+  if (error) {
+    return res.status(400).send({
+      message: error.message,
+    });
+  }
+
+  const { id } = value;
+
   Log.destroy({
-    where: { id: payload?.id },
+    where: { id },
   })
     .then((data) => {
       console.log(data);
@@ -94,14 +97,14 @@ export const deleteLog = (req, res) => {
 export const updateLog = (req, res) => {
   const payload = req?.body;
 
-  const logUpdateSchema = Joi.object({
+  const payloadChecked = Joi.object({
     id: Joi.required(),
     title: Joi.string().min(3).max(20),
     description: Joi.string().allow("").min(3).max(140),
     quality: Joi.number(),
   });
 
-  const { error, value } = logUpdateSchema.validate(payload);
+  const { error, value } = payloadChecked.validate(payload);
 
   if (error) {
     return res.status(400).send({
@@ -112,8 +115,6 @@ export const updateLog = (req, res) => {
   const validatedPayload = {
     ...value,
   };
-
-  console.log(validatedPayload);
 
   Log.update(validatedPayload, {
     where: { id: value?.id },

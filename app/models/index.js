@@ -4,10 +4,10 @@ import { Sequelize, Op, DataTypes } from "sequelize";
 import dbConfig from "../config/db.config.js";
 
 // Models
-import Log from "./log/log.model.js";
-import User from "./log/user.model.js";
-import Plan from "./log/plan.model.js";
-import Journey from "./log/journey.model.js";
+import Log from "./log.model.js";
+import User from "./user.model.js";
+import Plan from "./plan.model.js";
+import Journey from "./journey.model.js";
 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
@@ -43,7 +43,7 @@ const LogObject = Log(sequelize, Sequelize, DataTypes);
 db.User = UserObject;
 db.Plan = PlanObject;
 db.Journey = JourneyObject;
-db.Logs = LogObject;
+db.Log = LogObject;
 
 UserObject.hasMany(JourneyObject, {
   foreignKey: "userId",

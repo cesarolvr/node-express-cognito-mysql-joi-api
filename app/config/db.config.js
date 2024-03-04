@@ -1,6 +1,6 @@
 export default {
-  HOST: "localhost",
-  USER: "root",
-  PASSWORD: "12345678",
-  DB: "journeylog-db",
+  HOST: ENV.DB.HOST,
+  USER: ENV.DB.USER,
+  PASSWORD: ENV.DB.PASSWORD,
+  DB: ENV.DB.DB_NAME,
 };
