@@ -1,6 +1,0 @@
-export default {
-  HOST: ENV.DB.HOST,
-  USER: ENV.DB.USER,
-  PASSWORD: ENV.DB.PASSWORD,
-  DB: ENV.DB.DB_NAME,
-};

@@ -1,3 +1,5 @@
+import "./app/utils/environment.js";
+
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -7,7 +9,7 @@ import db from "./app/models/index.js";
 const app = express();
 
 var corsOptions = {
-  origin: ENV.API,
+  origin: process.env.API,
 };
 
 app.use(cors(corsOptions));

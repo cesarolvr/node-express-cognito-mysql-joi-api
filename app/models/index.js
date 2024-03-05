@@ -1,24 +1,26 @@
 import { Sequelize, Op, DataTypes } from "sequelize";
 
-// Config
-import dbConfig from "../config/db.config.js";
-
 // Models
 import Log from "./log.model.js";
 import User from "./user.model.js";
 import Plan from "./plan.model.js";
 import Journey from "./journey.model.js";
 
-const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-  host: dbConfig.HOST,
-  dialect: "mysql",
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000,
-  },
-});
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: "mysql",
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
+  }
+);
 
 try {
   await sequelize.authenticate();
