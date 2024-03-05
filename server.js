@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const PORT = 8080;
 
 // Database
-db.sequelize.sync();
+db.sequelize.sync({ force: true });
 
 app.listen(PORT, () => {
   console.log(`journeylog's API running on port ${PORT}.`);

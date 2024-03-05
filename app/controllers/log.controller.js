@@ -78,17 +78,16 @@ export const deleteLog = (req, res) => {
     });
   }
 
-  const { id } = value;
-
   Log.destroy({
-    where: { id },
+    where: { id: value?.id },
   })
     .then((data) => {
       console.log(data);
       res.status(200).send(data);
     })
     .catch((err) => {
-      res.status(500).send({
+      console.log(err)
+      return res.status(500).send({
         message: err.message || "Some error occurred while deleting the Log.",
       });
     });

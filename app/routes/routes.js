@@ -4,16 +4,26 @@ import {
   deleteLog,
   updateLog,
 } from "../controllers/log.controller.js";
+
+import { createPlan, getPlans } from "../controllers/plan.controller.js";
 import { Router } from "express";
 
 export default (app) => {
   var router = Router();
 
+  // TODO: Change to see only the verb instead a specific action endpoints
+
   // Logs
-  router.post("/logs/create", createLog);
+  router.post("/log/create", createLog);
   router.get("/logs", getLogs);
-  router.delete("/logs/delete", deleteLog);
-  router.put("/logs/update", updateLog);
+  router.delete("/log/delete", deleteLog);
+  router.put("/log/update", updateLog);
+
+  // Plans
+  router.post("/plan/create", createPlan);
+  router.get("/plans", getPlans);
+  // router.delete("/plan/delete", deletePlan);
+  // router.put("/plan/update", updatePlan);
 
   // router.get("/published", logs.findAllPublished);
 

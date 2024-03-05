@@ -9,10 +9,10 @@ export default (sequelize, Sequelize, DataTypes) => {
         primaryKey: true,
       },
       name: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      value: {
+      price: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
