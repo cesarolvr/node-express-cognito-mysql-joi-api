@@ -5,7 +5,11 @@ import {
   updateLog,
 } from "../controllers/log.controller.js";
 
-import { createPlan, getPlans } from "../controllers/plan.controller.js";
+import {
+  createPlan,
+  getPlans,
+  deletePlan,
+} from "../controllers/plan.controller.js";
 import { Router } from "express";
 
 export default (app) => {
@@ -20,9 +24,9 @@ export default (app) => {
   router.put("/log/update", updateLog);
 
   // Plans
-  router.post("/plan/create", createPlan);
+  router.post("/plan/", createPlan);
   router.get("/plans", getPlans);
-  // router.delete("/plan/delete", deletePlan);
+  router.delete("/plan/", deletePlan);
   // router.put("/plan/update", updatePlan);
 
   // router.get("/published", logs.findAllPublished);

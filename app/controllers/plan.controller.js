@@ -38,7 +38,7 @@ export const createPlan = (req, res) => {
     .then((data) => {
       console.log(data);
       res.status(201).send({
-        message: "created",
+        message: "Plan created",
       });
     })
     .catch((err) => {
@@ -59,5 +59,38 @@ export const getPlans = (req, res) => {
       });
     });
 };
-export const deletePlan = (f) => f;
+export const deletePlan = (req, res) => {
+  // check if this user has the permission to delete this one?
+
+  const payload = req?.body;
+
+  const payloadChecked = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { error, value } = payloadChecked.validate(payload);
+
+  if (error) {
+    return res.status(400).send({
+      message: error.message,
+    });
+  }
+
+  Plan.destroy({
+    where: { id: value?.id },
+  })
+    .then((data) => {
+      console.log(data);
+      res.status(200).send({
+        message: 'Deleted with success',
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send({
+        message: err.message || "Some error occurred while deleting this plan.",
+      });
+    });
+};
+
 export const updatePlan = (f) => f;

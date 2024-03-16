@@ -36,7 +36,7 @@ export const createLog = (req, res) => {
     .then((data) => {
       console.log(data);
       res.status(201).send({
-        message: "created",
+        message: "Log created",
       });
     })
     .catch((err) => {
@@ -83,7 +83,9 @@ export const deleteLog = (req, res) => {
   })
     .then((data) => {
       console.log(data);
-      res.status(200).send(data);
+      res.status(200).send({
+        message: "Log deleted",
+      });
     })
     .catch((err) => {
       console.log(err)
@@ -121,7 +123,7 @@ export const updateLog = (req, res) => {
     .then((data) => {
       console.log(data);
       res.status(200).send({
-        message: `log ${value.id} updated`,
+        message: `Log ${value.id} updated`,
       });
     })
     .catch((err) => {
