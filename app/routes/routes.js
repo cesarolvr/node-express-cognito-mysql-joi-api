@@ -22,6 +22,14 @@ import {
   updatePlan,
 } from "../controllers/plan.controller.js";
 
+import {
+  createUser,
+  getUsers,
+  getUserById,
+  deleteUser,
+  updateUser,
+} from "../controllers/user.controller.js";
+
 import { Router } from "express";
 
 export default (app) => {
@@ -35,6 +43,13 @@ export default (app) => {
   router.get("/plan/:id", getPlanById);
   router.delete("/plan/:id", deletePlan);
   router.put("/plan/:id", updatePlan);
+
+  // Users
+  router.post("/user", createUser);
+  router.get("/users/", getUsers);
+  router.get("/user/:id", getUserById);
+  router.delete("/user/:id", deleteUser);
+  router.put("/user/:id", updateUser);
 
   // Journeys
   router.post("/journey", createJourney);
