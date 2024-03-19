@@ -6,7 +6,7 @@ import db from "../models/index.js";
 const Journey = db.Journey;
 
 // Utils
-import { getIdParam } from "../utils/getIdParam.js";
+import { getParam } from "../utils/getParam.js";
 
 // Journey
 export const createJourney = (req, res) => {
@@ -79,7 +79,7 @@ export const getJourneys = (req, res) => {
 export const deleteJourney = (req, res) => {
   // check if this user has the permission to delete this one?
 
-  const id = getIdParam(req?.params);
+  const id = getParam(req?.params, 'id');
 
   Journey.destroy({
     where: { id },
@@ -107,7 +107,7 @@ export const deleteJourney = (req, res) => {
 
 export const updateJourney = (req, res) => {
   const payload = req?.body;
-  const id = getIdParam(req?.params);
+  const id = getParam(req?.params, 'id');
 
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(140),

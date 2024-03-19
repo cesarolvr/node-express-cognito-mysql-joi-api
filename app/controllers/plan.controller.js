@@ -6,7 +6,7 @@ import db from "../models/index.js";
 const Plan = db.Plan;
 
 // Utils
-import { getIdParam } from "../utils/getIdParam.js";
+import { getParam } from "../utils/getParam.js";
 
 // Plan
 export const createPlan = (req, res) => {
@@ -69,7 +69,7 @@ export const getPlans = (req, res) => {
 
 export const deletePlan = (req, res) => {
   // check if this user has the permission to delete this one?
-  const id = getIdParam(req?.params);
+  const id = getParam(req?.params, 'id');
 
   Plan.destroy({
     where: { id },
@@ -96,7 +96,7 @@ export const deletePlan = (req, res) => {
 
 export const updatePlan = (req, res) => {
   const payload = req?.body;
-  const id = getIdParam(req?.params);
+  const id = getParam(req?.params, 'id');
 
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(140),

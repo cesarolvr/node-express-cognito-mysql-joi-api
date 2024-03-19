@@ -44,11 +44,11 @@ export default (app) => {
   router.put("/journey/:id", updateJourney);
 
   // Logs
-  router.post("/journey/:id/log", createLog);
-  router.get("/journey/:id/logs", getLogs);
-  router.get("/journey/:id/log/:id", getLogById);
-  router.delete("/journey/:id/log", deleteLog);
-  router.put("/journey/:id/log", updateLog);
+  router.post("/journey/:journeyid/log", createLog);
+  router.get("/journey/:journeyid/logs", getLogs);
+  router.get("/journey/:journeyid/log/:logid", getLogById);
+  router.delete("/journey/:journeyid/log", deleteLog);
+  router.put("/journey/:journeyid/log", updateLog);
 
   // // Retrieve a single log with id
   // router.get("/:id", logs.findOne);
