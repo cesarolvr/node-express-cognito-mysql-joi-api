@@ -33,8 +33,8 @@ export default (app) => {
   router.post("/plan", createPlan);
   router.get("/plans", getPlans);
   router.get("/plan/:id", getPlanById);
-  router.delete("/plan", deletePlan);
-  router.put("/plan", updatePlan);
+  router.delete("/plan/:id", deletePlan);
+  router.put("/plan/:id", updatePlan);
 
   // Journeys
   router.post("/journey", createJourney);

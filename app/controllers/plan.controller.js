@@ -5,6 +5,9 @@ import { v4 as uuidv4 } from "uuid";
 import db from "../models/index.js";
 const Plan = db.Plan;
 
+// Utils
+import { getIdParam } from "../utils/getIdParam.js";
+
 // Plan
 export const createPlan = (req, res) => {
   const payload = req?.body;
@@ -47,6 +50,7 @@ export const createPlan = (req, res) => {
       });
     });
 };
+
 export const getPlans = (req, res) => {
   Plan.findAll()
     .then((data) => {
@@ -59,25 +63,13 @@ export const getPlans = (req, res) => {
       });
     });
 };
+
 export const deletePlan = (req, res) => {
   // check if this user has the permission to delete this one?
-
-  const payload = req?.body;
-
-  const payloadChecked = Joi.object({
-    id: Joi.string().required(),
-  });
-
-  const { error, value } = payloadChecked.validate(payload);
-
-  if (error) {
-    return res.status(400).send({
-      message: error.message,
-    });
-  }
+  const id = getIdParam(req?.params);
 
   Plan.destroy({
-    where: { id: value?.id },
+    where: { id },
   })
     .then((data) => {
       const wasSomethingUpdated = data;
@@ -101,9 +93,9 @@ export const deletePlan = (req, res) => {
 
 export const updatePlan = (req, res) => {
   const payload = req?.body;
+  const id = getIdParam(req?.params);
 
   const payloadChecked = Joi.object({
-    id: Joi.string().required(),
     name: Joi.string().min(3).max(140),
     price: Joi.number(),
     duration: Joi.number(),
@@ -124,7 +116,7 @@ export const updatePlan = (req, res) => {
   };
 
   Plan.update(validatedPayload, {
-    where: { id: value?.id },
+    where: { id },
   })
     .then((data) => {
       const wasSomethingUpdated = data[0];
