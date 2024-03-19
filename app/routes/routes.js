@@ -39,16 +39,16 @@ export default (app) => {
   // Journeys
   router.post("/journey", createJourney);
   router.get("/journeys/", getJourneys);
-  router.get("/journey/:journeyId", getJourneyById);
-  router.delete("/journey/:journeyId", deleteJourney);
-  router.put("/journey/:journeyId", updateJourney);
+  router.get("/journey/:id", getJourneyById);
+  router.delete("/journey/:id", deleteJourney);
+  router.put("/journey/:id", updateJourney);
 
   // Logs
-  router.post("/journey/:journeyId/log", createLog);
-  router.get("/journey/:journeyId/logs", getLogs);
-  router.get("/journey/:journeyId/log/:id", getLogById);
-  router.delete("/journey/:journeyId/log", deleteLog);
-  router.put("/journey/:journeyId/log", updateLog);
+  router.post("/journey/:id/log", createLog);
+  router.get("/journey/:id/logs", getLogs);
+  router.get("/journey/:id/log/:id", getLogById);
+  router.delete("/journey/:id/log", deleteLog);
+  router.put("/journey/:id/log", updateLog);
 
   // // Retrieve a single log with id
   // router.get("/:id", logs.findOne);

@@ -29,8 +29,10 @@ export const createUser = (f) => {
 
   const { name, price, duration, trialTime, automaticRenew } = value;
 
+  const id = uuidv4();
+
   User.create({
-    id: uuidv4(),
+    id,
     name,
     price,
     duration,
@@ -40,7 +42,8 @@ export const createUser = (f) => {
     .then((data) => {
       console.log(data);
       res.status(201).send({
-        message: "created",
+        message: "User created",
+        id,
       });
     })
     .catch((err) => {

@@ -27,8 +27,10 @@ export const createLog = (req, res) => {
 
   const { title, description } = value;
 
+  const id = uuidv4();
+
   Log.create({
-    id: uuidv4(),
+    id,
     title,
     description,
     quality: 0,
@@ -37,6 +39,7 @@ export const createLog = (req, res) => {
       console.log(data);
       res.status(201).send({
         message: "Log created",
+        id,
       });
     })
     .catch((err) => {

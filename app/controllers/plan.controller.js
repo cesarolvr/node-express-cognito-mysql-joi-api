@@ -30,8 +30,10 @@ export const createPlan = (req, res) => {
 
   const { name, price, duration, trialTime, automaticRenew } = value;
 
+  const id = uuidv4();
+
   Plan.create({
-    id: uuidv4(),
+    id,
     name,
     price,
     duration,
@@ -42,6 +44,7 @@ export const createPlan = (req, res) => {
       console.log(data);
       res.status(201).send({
         message: "Plan created",
+        id,
       });
     })
     .catch((err) => {

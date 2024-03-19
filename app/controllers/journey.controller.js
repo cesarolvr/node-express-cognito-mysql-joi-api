@@ -5,6 +5,9 @@ import { v4 as uuidv4 } from "uuid";
 import db from "../models/index.js";
 const Journey = db.Journey;
 
+// Utils
+import { getIdParam } from "../utils/getIdParam.js";
+
 // Journey
 export const createJourney = (req, res) => {
   const payload = req?.body;
@@ -27,8 +30,10 @@ export const createJourney = (req, res) => {
 
   const { name, status, icon, type, isPublic } = value;
 
+  const id = uuidv4()
+
   Journey.create({
-    id: uuidv4(),
+    id,
     name,
     status: status || "IN PROGRESS",
     icon,
@@ -41,6 +46,7 @@ export const createJourney = (req, res) => {
       if (wasSomethingUpdated) {
         res.status(200).send({
           message: `Journey created`,
+          id,
         });
       } else {
         res.status(404).send({
@@ -73,22 +79,10 @@ export const getJourneys = (req, res) => {
 export const deleteJourney = (req, res) => {
   // check if this user has the permission to delete this one?
 
-  const payload = req?.body;
-
-  const payloadChecked = Joi.object({
-    id: Joi.string().required(),
-  });
-
-  const { error, value } = payloadChecked.validate(payload);
-
-  if (error) {
-    return res.status(400).send({
-      message: error.message,
-    });
-  }
+  const id = getIdParam(req?.params);
 
   Journey.destroy({
-    where: { id: value?.id },
+    where: { id },
   })
     .then((data) => {
       const wasSomethingUpdated = data;
@@ -98,7 +92,7 @@ export const deleteJourney = (req, res) => {
         });
       } else {
         res.status(404).send({
-          message: "Journey not deleted or already deleted",
+          message: "Journey not found or already deleted",
         });
       }
     })
@@ -113,9 +107,9 @@ export const deleteJourney = (req, res) => {
 
 export const updateJourney = (req, res) => {
   const payload = req?.body;
+  const id = getIdParam(req?.params);
 
   const payloadChecked = Joi.object({
-    id: Joi.string().required(),
     name: Joi.string().min(3).max(140),
     price: Joi.number(),
     duration: Joi.number(),
@@ -136,7 +130,7 @@ export const updateJourney = (req, res) => {
   };
 
   Journey.update(validatedPayload, {
-    where: { id: value?.id },
+    where: { id },
   })
     .then((data) => {
       const wasSomethingUpdated = data[0];
