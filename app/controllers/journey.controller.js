@@ -152,4 +152,17 @@ export const updateJourney = (req, res) => {
     });
 };
 
-export const getJourneyById = (f) => f;
+export const getJourneyById = (req, res) => {
+  const id = getParam(req?.params, 'id');
+  
+  Journey.findByPk(id)
+  .then((data) => {
+    res.status(200).send(data);
+  })
+  .catch((err) => {
+    res.status(500).send({
+      message:
+        err.message || "Some error occurred while getting the journey.",
+    });
+  });
+};

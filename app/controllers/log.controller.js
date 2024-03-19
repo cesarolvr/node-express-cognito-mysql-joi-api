@@ -5,16 +5,19 @@ import { v4 as uuidv4 } from "uuid";
 import db from "../models/index.js";
 const Log = db.Log;
 
+// Utils
+import { getParam } from "../utils/getParam.js";
+
 // Logs
 export const createLog = (req, res) => {
   // check if this user has the permission to create log in this journey?
 
   const payload = req?.body;
+  const journeyId = getParam(req?.params, "journeyid");
 
   const payloadChecked = Joi.object({
     title: Joi.string().min(3).max(20).required(),
     description: Joi.string().allow("").min(3).max(140),
-    journeyId: Joi.string().required(),
   });
 
   const { error, value } = payloadChecked.validate(payload);
@@ -34,6 +37,7 @@ export const createLog = (req, res) => {
     title,
     description,
     quality: 0,
+    journeyId,
   })
     .then((data) => {
       console.log(data);
@@ -51,8 +55,13 @@ export const createLog = (req, res) => {
 
 export const getLogs = (req, res) => {
   // check if this user has the permission to get this logs?
+  const journeyId = getParam(req?.params, "journeyid");
 
-  Log.findAll()
+  Log.findAll({
+    where: {
+      journeyId,
+    },
+  })
     .then((data) => {
       console.log(data);
       res.status(200).send(data);
@@ -142,7 +151,27 @@ export const updateLog = (req, res) => {
     });
 };
 
-export const getLogById = (f) => f;
+export const getLogById = (req, res) => {
+  // check if this user has the permission to get this logs?
+  const journeyId = getParam(req?.params, "journeyid");
+  const logId = getParam(req?.params, "logid");
+
+  Log.findOne({
+    where: {
+      journeyId,
+      id: logId
+    },
+  })
+    .then((data) => {
+      console.log(data);
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while getting the Log.",
+      });
+    });
+};
 
 // export const findOne = (req, res) => {
 //   Log.findById(req.params.id, (err, data) => {
