@@ -9,6 +9,7 @@ import {
   createPlan,
   getPlans,
   deletePlan,
+  updatePlan
 } from "../controllers/plan.controller.js";
 import { Router } from "express";
 
@@ -18,16 +19,16 @@ export default (app) => {
   // TODO: Change to see only the verb instead a specific action endpoints
 
   // Logs
-  router.post("/log/create", createLog);
+  router.post("/log", createLog);
   router.get("/logs", getLogs);
-  router.delete("/log/delete", deleteLog);
-  router.put("/log/update", updateLog);
+  router.delete("/log", deleteLog);
+  router.put("/log", updateLog);
 
   // Plans
-  router.post("/plan/", createPlan);
+  router.post("/plan", createPlan);
   router.get("/plans", getPlans);
-  router.delete("/plan/", deletePlan);
-  // router.put("/plan/update", updatePlan);
+  router.delete("/plan", deletePlan);
+  router.put("/plan", updatePlan);
 
   // router.get("/published", logs.findAllPublished);
 

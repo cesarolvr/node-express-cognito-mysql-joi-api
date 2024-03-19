@@ -88,7 +88,7 @@ export const deleteLog = (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
       return res.status(500).send({
         message: err.message || "Some error occurred while deleting the Log.",
       });
@@ -121,10 +121,16 @@ export const updateLog = (req, res) => {
     where: { id: value?.id },
   })
     .then((data) => {
-      console.log(data);
-      res.status(200).send({
-        message: `Log ${value.id} updated`,
-      });
+      const wasSomethingUpdated = data[0];
+      if (wasSomethingUpdated) {
+        res.status(200).send({
+          message: `Log ${value.id} updated`,
+        });
+      } else {
+        res.status(404).send({
+          message: `Log not found`,
+        });
+      }
     })
     .catch((err) => {
       res.status(500).send({

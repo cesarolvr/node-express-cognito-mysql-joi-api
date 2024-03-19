@@ -80,10 +80,16 @@ export const deletePlan = (req, res) => {
     where: { id: value?.id },
   })
     .then((data) => {
-      console.log(data);
-      res.status(200).send({
-        message: 'Deleted with success',
-      });
+      const wasSomethingUpdated = data;
+      if (wasSomethingUpdated === 1) {
+        res.status(200).send({
+          message: "Deleted with success",
+        });
+      } else {
+        res.status(404).send({
+          message: "Plan not deleted or already deleted",
+        });
+      }
     })
     .catch((err) => {
       console.log(err);
@@ -93,4 +99,48 @@ export const deletePlan = (req, res) => {
     });
 };
 
-export const updatePlan = (f) => f;
+export const updatePlan = (req, res) => {
+  const payload = req?.body;
+
+  const payloadChecked = Joi.object({
+    id: Joi.string().required(),
+    name: Joi.string().min(3).max(140),
+    price: Joi.number(),
+    duration: Joi.number(),
+    trialTime: Joi.number(),
+    automaticRenew: Joi.boolean(),
+  });
+
+  const { error, value } = payloadChecked.validate(payload);
+
+  if (error) {
+    return res.status(400).send({
+      message: error.message,
+    });
+  }
+
+  const validatedPayload = {
+    ...value,
+  };
+
+  Plan.update(validatedPayload, {
+    where: { id: value?.id },
+  })
+    .then((data) => {
+      const wasSomethingUpdated = data[0];
+      if (wasSomethingUpdated) {
+        res.status(200).send({
+          message: "Updated with success",
+        });
+      } else {
+        res.status(404).send({
+          message: "Plan not found",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while deleting this plan.",
+      });
+    });
+};
