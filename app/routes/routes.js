@@ -1,16 +1,27 @@
 import {
   createLog,
   getLogs,
+  getLogById,
   deleteLog,
   updateLog,
 } from "../controllers/log.controller.js";
 
 import {
+  createJourney,
+  getJourneys,
+  getJourneyById,
+  deleteJourney,
+  updateJourney,
+} from "../controllers/journey.controller.js";
+
+import {
   createPlan,
   getPlans,
+  getPlanById,
   deletePlan,
-  updatePlan
+  updatePlan,
 } from "../controllers/plan.controller.js";
+
 import { Router } from "express";
 
 export default (app) => {
@@ -18,19 +29,26 @@ export default (app) => {
 
   // TODO: Change to see only the verb instead a specific action endpoints
 
-  // Logs
-  router.post("/log", createLog);
-  router.get("/logs", getLogs);
-  router.delete("/log", deleteLog);
-  router.put("/log", updateLog);
-
   // Plans
   router.post("/plan", createPlan);
   router.get("/plans", getPlans);
+  router.get("/plan/:id", getPlanById);
   router.delete("/plan", deletePlan);
   router.put("/plan", updatePlan);
 
-  // router.get("/published", logs.findAllPublished);
+  // Journeys
+  router.post("/journey", createJourney);
+  router.get("/journeys/", getJourneys);
+  router.get("/journey/:journeyId", getJourneyById);
+  router.delete("/journey/:journeyId", deleteJourney);
+  router.put("/journey/:journeyId", updateJourney);
+
+  // Logs
+  router.post("/journey/:journeyId/log", createLog);
+  router.get("/journey/:journeyId/logs", getLogs);
+  router.get("/journey/:journeyId/log/:id", getLogById);
+  router.delete("/journey/:journeyId/log", deleteLog);
+  router.put("/journey/:journeyId/log", updateLog);
 
   // // Retrieve a single log with id
   // router.get("/:id", logs.findOne);

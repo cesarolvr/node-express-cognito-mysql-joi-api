@@ -55,7 +55,7 @@ export const getPlans = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while getting the Log.",
+        message: err.message || "Some error occurred while getting the plan.",
       });
     });
 };
@@ -144,3 +144,5 @@ export const updatePlan = (req, res) => {
       });
     });
 };
+
+export const getPlanById = (f) => f;

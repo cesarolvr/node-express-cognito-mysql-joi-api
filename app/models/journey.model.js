@@ -23,7 +23,7 @@ export default (sequelize, Sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      public: {
+      isPublic: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
       },

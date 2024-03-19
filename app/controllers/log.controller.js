@@ -139,6 +139,8 @@ export const updateLog = (req, res) => {
     });
 };
 
+export const getLogById = (f) => f;
+
 // export const findOne = (req, res) => {
 //   Log.findById(req.params.id, (err, data) => {
 //     if (err) {
