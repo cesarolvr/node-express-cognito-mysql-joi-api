@@ -47,17 +47,8 @@ export default (app) => {
   router.post("/journey/:journeyid/log", createLog);
   router.get("/journey/:journeyid/logs", getLogs);
   router.get("/journey/:journeyid/log/:logid", getLogById);
-  router.delete("/journey/:journeyid/log", deleteLog);
-  router.put("/journey/:journeyid/log", updateLog);
-
-  // // Retrieve a single log with id
-  // router.get("/:id", logs.findOne);
-
-  // // Update a log with id
-  // router.put("/:id", logs.update);
-
-  // // Delete all logs
-  // router.delete("/", logs.deleteAll);
+  router.delete("/journey/:journeyid/log/:logid", deleteLog);
+  router.put("/journey/:journeyid/log/:logid", updateLog);
 
   app.use(router);
 };

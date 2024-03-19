@@ -69,7 +69,7 @@ export const getPlans = (req, res) => {
 
 export const deletePlan = (req, res) => {
   // check if this user has the permission to delete this one?
-  const id = getParam(req?.params, 'id');
+  const id = getParam(req?.params, "id");
 
   Plan.destroy({
     where: { id },
@@ -96,7 +96,7 @@ export const deletePlan = (req, res) => {
 
 export const updatePlan = (req, res) => {
   const payload = req?.body;
-  const id = getParam(req?.params, 'id');
+  const id = getParam(req?.params, "id");
 
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(140),
@@ -140,4 +140,27 @@ export const updatePlan = (req, res) => {
     });
 };
 
-export const getPlanById = (f) => f;
+export const getPlanById = (req, res) => {
+  // check if this user has the permission to get this logs?
+  const id = getParam(req?.params, "id");
+
+  Plan.findOne({
+    where: {
+      id,
+    },
+  })
+    .then((data) => {
+      if (data) {
+        res.status(200).send(data);
+      } else {
+        res.status(404).send({
+          message: `Plan not found or already deleted`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while getting the plan.",
+      });
+    });
+};

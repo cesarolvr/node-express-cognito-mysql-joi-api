@@ -75,32 +75,25 @@ export const getLogs = (req, res) => {
 
 export const deleteLog = (req, res) => {
   // check if this user has the permission to delete this one?
-
-  const payload = req?.body;
-
-  const payloadChecked = Joi.object({
-    id: Joi.string().required(),
-  });
-
-  const { error, value } = payloadChecked.validate(payload);
-
-  if (error) {
-    return res.status(400).send({
-      message: error.message,
-    });
-  }
+  const journeyId = getParam(req?.params, "journeyid");
+  const logId = getParam(req?.params, "logid");
 
   Log.destroy({
-    where: { id: value?.id },
+    where: { id: logId, journeyId },
   })
     .then((data) => {
-      console.log(data);
-      res.status(200).send({
-        message: "Log deleted",
-      });
+      const wasSomethingUpdated = data;
+      if (wasSomethingUpdated === 1) {
+        res.status(200).send({
+          message: "Deleted with success",
+        });
+      } else {
+        res.status(404).send({
+          message: "Log not found or already deleted",
+        });
+      }
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send({
         message: err.message || "Some error occurred while deleting the Log.",
       });
@@ -110,8 +103,10 @@ export const deleteLog = (req, res) => {
 export const updateLog = (req, res) => {
   const payload = req?.body;
 
+  const journeyId = getParam(req?.params, "journeyid");
+  const logId = getParam(req?.params, "logid");
+
   const payloadChecked = Joi.object({
-    id: Joi.required(),
     title: Joi.string().min(3).max(20),
     description: Joi.string().allow("").min(3).max(140),
     quality: Joi.number(),
@@ -130,13 +125,13 @@ export const updateLog = (req, res) => {
   };
 
   Log.update(validatedPayload, {
-    where: { id: value?.id },
+    where: { id: logId, journeyId },
   })
     .then((data) => {
       const wasSomethingUpdated = data[0];
       if (wasSomethingUpdated) {
         res.status(200).send({
-          message: `Log ${value.id} updated`,
+          message: `Log ${logId} updated`,
         });
       } else {
         res.status(404).send({
@@ -159,12 +154,17 @@ export const getLogById = (req, res) => {
   Log.findOne({
     where: {
       journeyId,
-      id: logId
+      id: logId,
     },
   })
     .then((data) => {
-      console.log(data);
-      res.status(200).send(data);
+      if (data) {
+        res.status(200).send(data);
+      } else {
+        res.status(404).send({
+          message: `Log not found or already deleted`,
+        });
+      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -172,79 +172,3 @@ export const getLogById = (req, res) => {
       });
     });
 };
-
-// export const findOne = (req, res) => {
-//   Log.findById(req.params.id, (err, data) => {
-//     if (err) {
-//       if (err.kind === "not_found") {
-//         res.status(404).send({
-//           message: `Not found log with id ${req.params.id}.`,
-//         });
-//       } else {
-//         res.status(500).send({
-//           message: "Error retrieving log with id " + req.params.id,
-//         });
-//       }
-//     } else res.send(data);
-//   });
-// };
-
-// export const findAllPublished = (req, res) => {
-//   Log.getAllPublished((err, data) => {
-//     if (err)
-//       res.status(500).send({
-//         message: err.message || "Some error occurred while retrieving logs.",
-//       });
-//     else res.send(data);
-//   });
-// };
-
-// export const update = (req, res) => {
-//   if (!req.body) {
-//     res.status(400).send({
-//       message: "Content can not be empty!",
-//     });
-//   }
-
-//   console.log(req.body);
-
-//   Log.updateById(req.params.id, new Log(req.body), (err, data) => {
-//     if (err) {
-//       if (err.kind === "not_found") {
-//         res.status(404).send({
-//           message: `Not found log with id ${req.params.id}.`,
-//         });
-//       } else {
-//         res.status(500).send({
-//           message: "Error updating log with id " + req.params.id,
-//         });
-//       }
-//     } else res.send(data);
-//   });
-// };
-
-// export const deleteLog = (req, res) => {
-//   Log.remove(req.params.id, (err, data) => {
-//     if (err) {
-//       if (err.kind === "not_found") {
-//         res.status(404).send({
-//           message: `Not found log with id ${req.params.id}.`,
-//         });
-//       } else {
-//         res.status(500).send({
-//           message: "Could not delete log with id " + req.params.id,
-//         });
-//       }
-//     } else res.send({ message: `Log was deleted successfully!` });
-//   });
-// };
-
-// export const deleteAll = (req, res) => {
-//   Log.removeAll((err, data) => {
-//     if (err)
-//       res.status(500).send({
-//         message: err.message || "Some error occurred while removing all logs.",
-//       });
-//     else res.send({ message: `All logs were deleted successfully!` });
-//   });
-// };
