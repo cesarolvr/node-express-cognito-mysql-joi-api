@@ -1,3 +1,5 @@
+import bcrypt from "bcrypt";
+
 export default (sequelize, Sequelize, DataTypes) => {
   const UserObject = sequelize.define(
     "User",
@@ -18,6 +20,15 @@ export default (sequelize, Sequelize, DataTypes) => {
       },
       password: {
         type: DataTypes.STRING,
+        allowNull: true,
+        set(value) {
+          const hash = bcrypt.hashSync(value, 8);
+          this.setDataValue("password", hash);
+        },
+        // get() {
+        //   const storedPassword = this.getDataValue("password");
+        //   return bcrypt.compareSync(storedPassword, this.password);
+        // },
       },
     },
     {
@@ -25,12 +36,12 @@ export default (sequelize, Sequelize, DataTypes) => {
       underscrored: true,
       createdAt: "created_at",
       updatedAt: "updated_at",
+      defaultScope: {
+        attributes: { exclude: ["password"] },
+      },
       instanceMethods: {
-        generateHash(password) {
-          return bcrypt.hash(password, bcrypt.genSaltSync(8));
-        },
-        validPassword(password) {
-          return bcrypt.compare(password, this.password);
+        validPassword: function (password) {
+          return bcrypt.compareSync(password, this.password);
         },
       },
     }
