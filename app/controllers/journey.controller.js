@@ -18,6 +18,7 @@ export const createJourney = (req, res) => {
     icon: Joi.string().allow(""),
     type: Joi.string().allow(""),
     isPublic: Joi.boolean(),
+    userId: Joi.string().required(),
   });
 
   const { error, value } = payloadChecked.validate(payload);
@@ -30,7 +31,7 @@ export const createJourney = (req, res) => {
 
   const { name, status, icon, type, isPublic } = value;
 
-  const id = uuidv4()
+  const id = uuidv4();
 
   Journey.create({
     id,
@@ -79,7 +80,7 @@ export const getJourneys = (req, res) => {
 export const deleteJourney = (req, res) => {
   // check if this user has the permission to delete this one?
 
-  const id = getParam(req?.params, 'id');
+  const id = getParam(req?.params, "id");
 
   Journey.destroy({
     where: { id },
@@ -107,7 +108,7 @@ export const deleteJourney = (req, res) => {
 
 export const updateJourney = (req, res) => {
   const payload = req?.body;
-  const id = getParam(req?.params, 'id');
+  const id = getParam(req?.params, "id");
 
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(140),
@@ -153,16 +154,16 @@ export const updateJourney = (req, res) => {
 };
 
 export const getJourneyById = (req, res) => {
-  const id = getParam(req?.params, 'id');
-  
+  const id = getParam(req?.params, "id");
+
   Journey.findByPk(id)
-  .then((data) => {
-    res.status(200).send(data);
-  })
-  .catch((err) => {
-    res.status(500).send({
-      message:
-        err.message || "Some error occurred while getting the journey.",
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while getting the journey.",
+      });
     });
-  });
 };
