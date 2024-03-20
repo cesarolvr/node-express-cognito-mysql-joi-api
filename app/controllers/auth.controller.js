@@ -6,6 +6,8 @@ import Joi from "joi";
 import db from "../models/index.js";
 const User = db.User;
 
+// Voltar token de login logo após criar o usuário já automaticamente
+
 // Signin
 export const signin = async (req, res) => {
   try {

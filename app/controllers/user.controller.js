@@ -110,8 +110,6 @@ export const createUser = async (req, res) => {
     });
 };
 
-// export const getUsers = (f) => f;
-
 export const deleteUser = (req, res) => {
   // check if this user has the permission to delete this one?
   const id = getParam(req?.params, "id");

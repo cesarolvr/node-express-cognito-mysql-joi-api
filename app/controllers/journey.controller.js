@@ -12,13 +12,15 @@ import { getParam } from "../utils/getParam.js";
 export const createJourney = (req, res) => {
   const payload = req?.body;
 
+  const { userInfo } = req;
+
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(140).required(),
     status: Joi.string(),
     icon: Joi.string().allow(""),
     type: Joi.string().allow(""),
     isPublic: Joi.boolean(),
-    userId: Joi.string().required(),
+    // userId: Joi.string().required(),
   });
 
   const { error, value } = payloadChecked.validate(payload);
@@ -39,6 +41,7 @@ export const createJourney = (req, res) => {
     status: status || "IN PROGRESS",
     icon,
     type,
+    userId: userInfo.id,
     isPublic: isPublic || false,
   })
     .then((data) => {
@@ -64,7 +67,13 @@ export const createJourney = (req, res) => {
 };
 
 export const getJourneys = (req, res) => {
-  Journey.findAll()
+  const { userInfo } = req;
+  
+  Journey.findAll({
+    where: {
+      userId: userInfo.id,
+    },
+  })
     .then((data) => {
       console.log(data);
       res.status(200).send(data);
@@ -110,6 +119,10 @@ export const updateJourney = (req, res) => {
   const payload = req?.body;
   const id = getParam(req?.params, "id");
 
+  const { userInfo } = req;
+
+  console.log("userId", { userId: userInfo.id, journeyId: id });
+
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(140),
     price: Joi.number(),
@@ -131,7 +144,7 @@ export const updateJourney = (req, res) => {
   };
 
   Journey.update(validatedPayload, {
-    where: { id },
+    where: { id, userId: userInfo.id },
   })
     .then((data) => {
       const wasSomethingUpdated = data[0];

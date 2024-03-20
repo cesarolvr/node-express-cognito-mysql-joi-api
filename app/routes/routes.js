@@ -24,7 +24,6 @@ import {
 
 import {
   createUser,
-  // getUsers,
   getUserById,
   deleteUser,
   updateUser,
@@ -52,7 +51,6 @@ export default (app) => {
 
   // Users
   router.post("/signup", createUser);
-  // router.get("/users/", getUsers);
   router.get("/user/:id", getUserById);
   router.delete("/user/:id", deleteUser);
   router.put("/user/:id", updateUser);
