@@ -31,6 +31,7 @@ import {
 } from "../controllers/user.controller.js";
 
 import { signin } from "../controllers/auth.controller.js";
+import { authMiddleware } from "../middlewares/auth.js";
 
 import { Router } from "express";
 
@@ -46,6 +47,8 @@ export default (app) => {
   router.get("/plan/:id", getPlanById);
   router.delete("/plan/:id", deletePlan);
   router.put("/plan/:id", updatePlan);
+
+  app.use(["/user", "/journeys", "/journey"], authMiddleware);
 
   // Users
   router.post("/signup", createUser);
