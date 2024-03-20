@@ -30,12 +30,15 @@ import {
   updateUser,
 } from "../controllers/user.controller.js";
 
+import { signin } from "../controllers/auth.controller.js";
+
 import { Router } from "express";
 
 export default (app) => {
   var router = Router();
 
-  // TODO: Change to see only the verb instead a specific action endpoints
+  // Auth
+  router.post("/signin", signin);
 
   // Plans
   router.post("/plan", createPlan);
@@ -45,7 +48,7 @@ export default (app) => {
   router.put("/plan/:id", updatePlan);
 
   // Users
-  router.post("/user", createUser);
+  router.post("/signup", createUser);
   // router.get("/users/", getUsers);
   router.get("/user/:id", getUserById);
   router.delete("/user/:id", deleteUser);

@@ -8,16 +8,64 @@ import { getParam } from "../utils/getParam.js";
 import db from "../models/index.js";
 const User = db.User;
 
+// Signup
+// export const signup = async (req, res) => {
+//   const payload = req?.body;
+
+//   const payloadChecked = Joi.object({
+//     username: Joi.string().min(3).max(30).required(),
+//     email: Joi.string().required().email({ minDomainSegments: 2 }),
+//     password: Joi.string().min(8).max(30).required(),
+//     confirm_password: Joi.any().valid(Joi.ref("password")).required(),
+//   });
+
+//   const { error, value } = payloadChecked.validate(payload);
+
+//   if (error) {
+//     return res.status(400).send({
+//       message: error.message,
+//     });
+//   }
+
+//   const validatedPayload = {
+//     ...value,
+//   };
+
+//   const { name, email, password } = req.body;
+
+//   const userExists = await db.User.findOne({
+//     where: { email },
+//   });
+
+//   if (userExists) {
+//     return res.status(400).send({
+//       message: "This email is already used",
+//     });
+//   }
+
+//   User.findAll()
+//     .then((data) => {
+//       console.log(data);
+//       res.status(200).send(data);
+//     })
+//     .catch((err) => {
+//       res.status(500).send({
+//         message: err.message || "Some error occurred while getting the user.",
+//       });
+//     });
+// };
+
 // User
-export const createUser = (req, res) => {
+export const createUser = async (req, res) => {
   // check if this user has the permission to create log in this journey?
 
   const payload = req?.body;
 
   const payloadChecked = Joi.object({
     username: Joi.string().min(3).max(30).required(),
-    email: Joi.string().required(),
-    password: Joi.string().min(8).max(30),
+    email: Joi.string().required().email(),
+    password: Joi.string().min(8).max(30).required(),
+    confirm_password: Joi.any().valid(Joi.ref("password")).required(),
   });
 
   const { error, value } = payloadChecked.validate(payload);
@@ -30,6 +78,16 @@ export const createUser = (req, res) => {
 
   const { username, email, password } = value;
 
+  const userExists = await User.findOne({
+    where: { email },
+  });
+
+  if (userExists) {
+    return res.status(400).send({
+      message: "This email is already used",
+    });
+  }
+
   const id = uuidv4();
 
   User.create({
@@ -39,7 +97,7 @@ export const createUser = (req, res) => {
     password,
   })
     .then((data) => {
-      console.log(data);
+      console.log('aaa', data);
       res.status(201).send({
         message: "User created",
         id,
@@ -86,7 +144,7 @@ export const updateUser = (req, res) => {
 
   const payloadChecked = Joi.object({
     username: Joi.string().min(3).max(30).required(),
-    email: Joi.string().required(),
+    email: Joi.string().required().email({ minDomainSegments: 2 }),
     password: Joi.string().min(8).max(30),
   });
 

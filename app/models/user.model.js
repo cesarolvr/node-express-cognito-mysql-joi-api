@@ -13,10 +13,10 @@ export default (sequelize, Sequelize, DataTypes) => {
       email: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
       },
       username: {
         type: DataTypes.STRING,
-        unique: true,
       },
       password: {
         type: DataTypes.STRING,
@@ -38,6 +38,11 @@ export default (sequelize, Sequelize, DataTypes) => {
       updatedAt: "updated_at",
       defaultScope: {
         attributes: { exclude: ["password"] },
+      },
+      scopes: {
+        withPassword: {
+          attributes: { include: ["password"] },
+        },
       },
       instanceMethods: {
         validPassword: function (password) {
