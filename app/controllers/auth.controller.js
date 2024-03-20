@@ -44,9 +44,18 @@ export const signin = async (req, res) => {
     }
 
     // Authenticate with JWT
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: 900,
-    });
+    const token = jwt.sign(
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        planId: user.planId,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 900,
+      }
+    );
 
     res.status(200).send({
       id: user.id,
