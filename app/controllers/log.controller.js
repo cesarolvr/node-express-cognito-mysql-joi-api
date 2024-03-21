@@ -4,13 +4,15 @@ import { v4 as uuidv4 } from "uuid";
 // Model
 import db from "../models/index.js";
 const Log = db.Log;
+const Journey = db.Journey;
 
 // Utils
 import { getParam } from "../utils/getParam.js";
 
 // Logs
-export const createLog = (req, res) => {
+export const createLog = async (req, res) => {
   // check if this user has the permission to create log in this journey?
+  const { userInfo } = req;
 
   const payload = req?.body;
   const journeyId = getParam(req?.params, "journeyid");
@@ -32,79 +34,156 @@ export const createLog = (req, res) => {
 
   const id = uuidv4();
 
-  Log.create({
-    id,
-    title,
-    description,
-    quality: 0,
-    journeyId,
-  })
-    .then((data) => {
-      console.log(data);
-      res.status(201).send({
-        message: "Log created",
-        id,
-      });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Log.",
-      });
+  const JourneyTobeEdited = await Journey.findByPk(journeyId);
+
+  if (!JourneyTobeEdited) {
+    res.status(404).send({
+      message: "Journey not found.",
     });
-};
+    return;
+  }
 
-export const getLogs = (req, res) => {
-  // check if this user has the permission to get this logs?
-  const journeyId = getParam(req?.params, "journeyid");
+  const { userId } = JourneyTobeEdited;
+  const thisJourneyBelongsToThisUser = userId === userInfo.id;
 
-  Log.findAll({
-    where: {
+  if (thisJourneyBelongsToThisUser) {
+    Log.create({
+      id,
+      title,
+      description,
+      quality: 0,
       journeyId,
-    },
-  })
-    .then((data) => {
-      console.log(data);
-      res.status(200).send(data);
     })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while getting the Log.",
+      .then((data) => {
+        console.log(data);
+        res.status(201).send({
+          message: "Log created",
+          id,
+        });
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message || "Some error occurred while creating the Log.",
+        });
       });
+  } else {
+    res.status(401).send({
+      message: "You cannot edit this Journey.",
     });
+  }
 };
 
-export const deleteLog = (req, res) => {
-  // check if this user has the permission to delete this one?
+export const getLogs = async (req, res) => {
+  const journeyId = getParam(req?.params, "journeyid");
+  const { userInfo } = req;
+
+  const JourneyTobeEdited = await Journey.findByPk(journeyId);
+
+  if (!JourneyTobeEdited) {
+    res.status(404).send({
+      message: "Journey not found.",
+    });
+    return;
+  }
+
+  const { userId } = JourneyTobeEdited;
+  const thisJourneyBelongsToThisUser = userId === userInfo.id;
+
+  if (thisJourneyBelongsToThisUser) {
+    Log.findAll({
+      where: {
+        journeyId,
+      },
+    })
+      .then((data) => {
+        console.log(data);
+        res.status(200).send(data);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message || "Some error occurred while getting the logs.",
+        });
+      });
+  } else {
+    res.status(401).send({
+      message: "You cannot see these logs.",
+    });
+  }
+};
+
+export const deleteLog = async (req, res) => {
   const journeyId = getParam(req?.params, "journeyid");
   const logId = getParam(req?.params, "logid");
 
-  Log.destroy({
-    where: { id: logId, journeyId },
-  })
-    .then((data) => {
-      const wasSomethingUpdated = data;
-      if (wasSomethingUpdated === 1) {
-        res.status(200).send({
-          message: "Deleted with success",
-        });
-      } else {
-        res.status(404).send({
-          message: "Log not found or already deleted",
-        });
-      }
-    })
-    .catch((err) => {
-      return res.status(500).send({
-        message: err.message || "Some error occurred while deleting the Log.",
-      });
+  const { userInfo } = req;
+
+  const JourneyTobeEdited = await Journey.findByPk(journeyId);
+
+  if (!JourneyTobeEdited) {
+    res.status(404).send({
+      message: "Journey not found.",
     });
+    return;
+  }
+
+  const { userId } = JourneyTobeEdited;
+  const thisJourneyBelongsToThisUser = userId === userInfo.id;
+
+  if (thisJourneyBelongsToThisUser) {
+    Log.destroy({
+      where: { id: logId, journeyId },
+    })
+      .then((data) => {
+        const wasSomethingUpdated = data;
+        if (wasSomethingUpdated === 1) {
+          res.status(200).send({
+            message: "Deleted with success",
+          });
+        } else {
+          res.status(404).send({
+            message: "Log not found",
+          });
+        }
+      })
+      .catch((err) => {
+        return res.status(500).send({
+          message:
+            err.message || "Some error occurred while deleting this log.",
+        });
+      });
+  } else {
+    res.status(401).send({
+      message: "You cannot delete this log.",
+    });
+  }
 };
 
-export const updateLog = (req, res) => {
+export const updateLog = async (req, res) => {
   const payload = req?.body;
 
   const journeyId = getParam(req?.params, "journeyid");
   const logId = getParam(req?.params, "logid");
+
+  const { userInfo } = req;
+
+  const JourneyTobeEdited = await Journey.findByPk(journeyId);
+
+  if (!JourneyTobeEdited) {
+    res.status(404).send({
+      message: "Journey not found.",
+    });
+    return;
+  }
+
+  const { userId } = JourneyTobeEdited;
+  const thisJourneyBelongsToThisUser = userId === userInfo.id;
+
+  if (!thisJourneyBelongsToThisUser) {
+    res.status(401).send({
+      message: "You cannot update this log.",
+    });
+    return;
+  }
 
   const payloadChecked = Joi.object({
     title: Joi.string().min(3).max(20),
