@@ -225,10 +225,30 @@ export const updateLog = async (req, res) => {
     });
 };
 
-export const getLogById = (req, res) => {
-  // check if this user has the permission to get this logs?
+export const getLogById = async (req, res) => {
   const journeyId = getParam(req?.params, "journeyid");
   const logId = getParam(req?.params, "logid");
+
+  const { userInfo } = req;
+
+  const JourneyTobeEdited = await Journey.findByPk(journeyId);
+
+  if (!JourneyTobeEdited) {
+    res.status(404).send({
+      message: "Journey not found.",
+    });
+    return;
+  }
+
+  const { userId } = JourneyTobeEdited;
+  const thisJourneyBelongsToThisUser = userId === userInfo.id;
+
+  if (!thisJourneyBelongsToThisUser) {
+    res.status(401).send({
+      message: "You cannot see this log.",
+    });
+    return;
+  }
 
   Log.findOne({
     where: {
