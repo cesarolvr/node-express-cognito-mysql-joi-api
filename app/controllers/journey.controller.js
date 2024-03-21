@@ -68,7 +68,7 @@ export const createJourney = (req, res) => {
 
 export const getJourneys = (req, res) => {
   const { userInfo } = req;
-  
+
   Journey.findAll({
     where: {
       userId: userInfo.id,
@@ -87,12 +87,11 @@ export const getJourneys = (req, res) => {
 };
 
 export const deleteJourney = (req, res) => {
-  // check if this user has the permission to delete this one?
-
+  const { userInfo } = req;
   const id = getParam(req?.params, "id");
 
   Journey.destroy({
-    where: { id },
+    where: { id, userId: userInfo.id },
   })
     .then((data) => {
       const wasSomethingUpdated = data;
@@ -102,7 +101,7 @@ export const deleteJourney = (req, res) => {
         });
       } else {
         res.status(404).send({
-          message: "Journey not found or already deleted",
+          message: "Journey not found",
         });
       }
     })
@@ -120,8 +119,6 @@ export const updateJourney = (req, res) => {
   const id = getParam(req?.params, "id");
 
   const { userInfo } = req;
-
-  console.log("userId", { userId: userInfo.id, journeyId: id });
 
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(140),
@@ -168,8 +165,9 @@ export const updateJourney = (req, res) => {
 
 export const getJourneyById = (req, res) => {
   const id = getParam(req?.params, "id");
+  const { userInfo } = req;
 
-  Journey.findByPk(id)
+  Journey.findOne({ where: { id, userId: userInfo.id } })
     .then((data) => {
       res.status(200).send(data);
     })
