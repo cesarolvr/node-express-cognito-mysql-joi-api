@@ -23,7 +23,7 @@ import {
 } from "../controllers/plan.controller.js";
 
 import {
-  createUser,
+  signup,
   getUserById,
   deleteUser,
   updateUser,
@@ -40,7 +40,7 @@ export default (app) => {
   // Auth
   router.post("/signin", signin);
 
-  // Plans
+  // Plans -> Close this routes before launch
   router.post("/plan", createPlan);
   router.get("/plans", getPlans);
   router.get("/plan/:id", getPlanById);
@@ -50,7 +50,7 @@ export default (app) => {
   app.use(["/user", "/journeys", "/journey"], authMiddleware);
 
   // Users
-  router.post("/signup", createUser);
+  router.post("/signup", signup);
   router.get("/user/:id", getUserById);
   router.delete("/user/:id", deleteUser);
   router.put("/user/:id", updateUser);

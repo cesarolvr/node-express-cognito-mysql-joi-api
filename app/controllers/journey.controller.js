@@ -20,7 +20,6 @@ export const createJourney = (req, res) => {
     icon: Joi.string().allow(""),
     type: Joi.string().allow(""),
     isPublic: Joi.boolean(),
-    // userId: Joi.string().required(),
   });
 
   const { error, value } = payloadChecked.validate(payload);
@@ -46,7 +45,6 @@ export const createJourney = (req, res) => {
   })
     .then((data) => {
       const wasSomethingUpdated = data;
-      console.log({ wasSomethingUpdated });
       if (wasSomethingUpdated) {
         res.status(200).send({
           message: `Journey created`,

@@ -8,55 +8,8 @@ import { getParam } from "../utils/getParam.js";
 import db from "../models/index.js";
 const User = db.User;
 
-// Signup
-// export const signup = async (req, res) => {
-//   const payload = req?.body;
-
-//   const payloadChecked = Joi.object({
-//     username: Joi.string().min(3).max(30).required(),
-//     email: Joi.string().required().email({ minDomainSegments: 2 }),
-//     password: Joi.string().min(8).max(30).required(),
-//     confirm_password: Joi.any().valid(Joi.ref("password")).required(),
-//   });
-
-//   const { error, value } = payloadChecked.validate(payload);
-
-//   if (error) {
-//     return res.status(400).send({
-//       message: error.message,
-//     });
-//   }
-
-//   const validatedPayload = {
-//     ...value,
-//   };
-
-//   const { name, email, password } = req.body;
-
-//   const userExists = await db.User.findOne({
-//     where: { email },
-//   });
-
-//   if (userExists) {
-//     return res.status(400).send({
-//       message: "This email is already used",
-//     });
-//   }
-
-//   User.findAll()
-//     .then((data) => {
-//       console.log(data);
-//       res.status(200).send(data);
-//     })
-//     .catch((err) => {
-//       res.status(500).send({
-//         message: err.message || "Some error occurred while getting the user.",
-//       });
-//     });
-// };
-
 // User
-export const createUser = async (req, res) => {
+export const signup = async (req, res) => {
   // check if this user has the permission to create log in this journey?
 
   const payload = req?.body;
@@ -97,7 +50,7 @@ export const createUser = async (req, res) => {
     password,
   })
     .then((data) => {
-      console.log('aaa', data);
+      console.log("aaa", data);
       res.status(201).send({
         message: "User created",
         id,
@@ -111,8 +64,16 @@ export const createUser = async (req, res) => {
 };
 
 export const deleteUser = (req, res) => {
-  // check if this user has the permission to delete this one?
   const id = getParam(req?.params, "id");
+
+  const { userInfo } = req;
+  const isThisUserItSelf = id === userInfo.id;
+
+  if (!isThisUserItSelf) {
+    return res.status(401).send({
+      message: "You cannot delete this user",
+    });
+  }
 
   User.destroy({
     where: { id },
@@ -139,6 +100,15 @@ export const deleteUser = (req, res) => {
 export const updateUser = (req, res) => {
   const payload = req?.body;
   const id = getParam(req?.params, "id");
+
+  const { userInfo } = req;
+  const isThisUserItSelf = id === userInfo.id;
+
+  if (!isThisUserItSelf) {
+    return res.status(401).send({
+      message: "You cannot update this user",
+    });
+  }
 
   const payloadChecked = Joi.object({
     username: Joi.string().min(3).max(30).required(),
@@ -181,8 +151,16 @@ export const updateUser = (req, res) => {
 };
 
 export const getUserById = (req, res) => {
-  // check if this user has the permission to get this logs?
   const id = getParam(req?.params, "id");
+
+  const { userInfo } = req;
+  const isThisUserItSelf = id === userInfo.id;
+
+  if (!isThisUserItSelf) {
+    return res.status(401).send({
+      message: "You cannot see this user",
+    });
+  }
 
   User.findOne({
     where: {
