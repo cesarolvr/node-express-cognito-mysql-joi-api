@@ -1,68 +1,40 @@
-import {
-  initAWS,
-  setCognitoAttributeList,
-  getUserPool,
-  getCognitoUser,
-  getAuthDetails,
-  getCognitoAttributeList,
-} from "../utils/awsConfig.js";
+import AWS from "aws-sdk";
 
-export const signUp = (email, password, agent = "none") => {
-  return new Promise((resolve) => {
-    initAWS();
-    setCognitoAttributeList(email, agent);
-    getUserPool().signUp(
-      email,
-      password,
-      getCognitoAttributeList(),
-      null,
-      function (err, result) {
-        if (err) {
-          return resolve({ statusCode: 422, response: err });
-        }
-        const response = {
-          username: result.user.username,
-          userConfirmed: result.userConfirmed,
-          userAgent: result.user.client.userAgent,
-        };
-        return resolve({ statusCode: 201, response: response });
-      }
-    );
-  });
+// TODO: ver a necessidade de crypto e bcrypt na mesma app
+import crypto from "crypto";
+
+const awsConfig = {
+  region: process.env.COGNITO_REGION,
 };
 
-export const verify = (email, code) => {
-  return new Promise((resolve) => {
-    getCognitoUser(email).confirmRegistration(code, true, (err, result) => {
-      if (err) {
-        return resolve({ statusCode: 422, response: err });
-      }
-      return resolve({ statusCode: 400, response: result });
-    });
-  });
+const cognitoCredentials = {
+  clientId: process.env.COGNITO_CLIENT_ID,
+  secretHash: process.env.COGNITO_CLIENT_SECRET,
 };
 
-export const signIn = (email, password) => {
-  return new Promise((resolve) => {
-    getCognitoUser(email).authenticateUser(getAuthDetails(email, password), {
-      onSuccess: (result) => {
-        const token = {
-          accessToken: result.getAccessToken().getJwtToken(),
-          idToken: result.getIdToken().getJwtToken(),
-          refreshToken: result.getRefreshToken().getToken(),
-        };
-        return resolve({
-          statusCode: 200,
-          response: decodeJWTToken(token),
-        });
-      },
+console.log("cognitoCredentials", cognitoCredentials);
 
-      onFailure: (err) => {
-        return resolve({
-          statusCode: 400,
-          response: err.message || JSON.stringify(err),
-        });
-      },
-    });
-  });
+const generateHash = (email) => {
+  return crypto
+    .createHmac("SHA256", cognitoCredentials.secretHash)
+    .update(`${email}${cognitoCredentials.clientId}`)
+    .digest("base64");
+};
+
+export const signUp = async ({ email, password }, userAttributes) => {
+  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
+
+  const hash = generateHash(email);
+
+  console.log("hash", hash);
+
+  return await cognitoIdentify
+    .signUp({
+      ClientId: cognitoCredentials.clientId,
+      Password: password,
+      Username: email,
+      SecretHash: hash,
+      UserAttributes: userAttributes,
+    })
+    .promise();
 };

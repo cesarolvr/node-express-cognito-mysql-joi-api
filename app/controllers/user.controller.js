@@ -8,17 +8,24 @@ import { getParam } from "../utils/getParam.js";
 import db from "../models/index.js";
 const User = db.User;
 
-// User
-export const signup = async (req, res) => {
-  // check if this user has the permission to create log in this journey?
+// Utils
+import { signUp } from "../services/auth.service.js";
 
+// User
+export const createUser = async (req, res) => {
+  // check if this user has the permission to create log in this journey?
   const payload = req?.body;
 
   const payloadChecked = Joi.object({
-    username: Joi.string().min(3).max(30).required(),
+    name: Joi.string().min(3).max(30).required(),
     email: Joi.string().required().email(),
-    password: Joi.string().min(8).max(30).required(),
+    password: Joi.string()
+      .regex(
+        /^(?!\s+)(?!.*\s+$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[$^*.[\]{}()?"!@#%&/\\,><':;|_~`=+\- ])[A-Za-z0-9$^*.[\]{}()?"!@#%&/\\,><':;|_~`=+\- ]{8,256}$/
+      )
+      .required(),
     confirm_password: Joi.any().valid(Joi.ref("password")).required(),
+    picture: Joi.string().uri().required(),
   });
 
   const { error, value } = payloadChecked.validate(payload);
@@ -29,38 +36,55 @@ export const signup = async (req, res) => {
     });
   }
 
-  const { username, email, password } = value;
+  const { name, email, password, picture } = value;
 
-  const userExists = await User.findOne({
-    where: { email },
-  });
-
-  if (userExists) {
-    return res.status(400).send({
-      message: "This email is already used",
+  try {
+    const result = await signUp({ email, password }, [
+      { Name: "email", Value: email },
+      { Name: "picture", Value: picture },
+      { Name: "name", Value: name },
+    ]);
+    console.log("result", result);
+    res.status(200).send({
+      message: "Created with success.",
+    });
+  } catch (err) {
+    console.log("err", err);
+    res.status(500).send({
+      message: err.message || "Some error occurred while creating this user.",
     });
   }
 
-  const id = uuidv4();
+  // const userExists = await User.findOne({
+  //   where: { email },
+  // });
 
-  User.create({
-    id,
-    username,
-    email,
-    password,
-  })
-    .then((data) => {
-      console.log("aaa", data);
-      res.status(201).send({
-        message: "User created",
-        id,
-      });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Plan.",
-      });
-    });
+  // if (userExists) {
+  //   return res.status(400).send({
+  //     message: "This email is already used",
+  //   });
+  // }
+
+  // const id = uuidv4();
+
+  // User.create({
+  //   id,
+  //   username,
+  //   email,
+  //   password,
+  // })
+  //   .then((data) => {
+  //     console.log("aaa", data);
+  //     res.status(201).send({
+  //       message: "User created",
+  //       id,
+  //     });
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).send({
+  //       message: err.message || "Some error occurred while creating the Plan.",
+  //     });
+  //   });
 };
 
 export const deleteUser = (req, res) => {
