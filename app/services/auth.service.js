@@ -50,6 +50,20 @@ export const confirm = async ({ username, code }) => {
     .promise();
 };
 
+export const resend = async ({ username }) => {
+  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
+
+  const hash = generateHash(username);
+
+  return await cognitoIdentify
+    .resendConfirmationCode({
+      ClientId: cognitoCredentials.clientId,
+      Username: username,
+      SecretHash: hash,
+    })
+    .promise();
+};
+
 // export const deleteUser = async ({ email, password }, userAttributes) => {
 //   const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
 

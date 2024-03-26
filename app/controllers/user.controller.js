@@ -9,7 +9,7 @@ import db from "../models/index.js";
 const User = db.User;
 
 // Utils
-import { signUp, confirm } from "../services/auth.service.js";
+import { signUp, confirm, resend } from "../services/auth.service.js";
 
 // User
 export const createUser = async (req, res) => {
@@ -226,6 +226,32 @@ export const confirmSignup = async (req, res) => {
     console.log('result', result)
     res.status(200).send({
       message: `User confirmed.`,
+    });
+  } catch (error) {
+    res.status(400).send({ success: false, message: error.message, error });
+  }
+};
+
+export const resendCode = async (req, res) => {
+  const payload = req?.body;
+
+  const payloadChecked = Joi.object({
+    username: Joi.string().min(3).max(30).required(),
+  });
+
+  const { error, value } = payloadChecked.validate(payload);
+
+  if (error) {
+    return res.status(400).send({
+      message: error.message,
+    });
+  }
+
+  try {
+    const result = await resend(value);
+    console.log('result', result)
+    res.status(200).send({
+      message: `Code resent.`,
     });
   } catch (error) {
     res.status(400).send({ success: false, message: error.message, error });

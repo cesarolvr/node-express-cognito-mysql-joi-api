@@ -25,6 +25,7 @@ import {
 import {
   createUser,
   confirmSignup,
+  resendCode,
   getUserById,
   deleteUser,
   updateUser,
@@ -41,6 +42,7 @@ export default (app) => {
   // Auth
   router.post("/signin", signin);
   router.post("/confirm", confirmSignup);
+  router.post("/resend-code", resendCode);
 
   // Plans -> Close this routes before launch
   router.post("/plan", createPlan);
