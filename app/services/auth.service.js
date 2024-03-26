@@ -40,13 +40,13 @@ export const signin = async (email, password) => {
 
   const hash = generateHash(email);
 
-  return await cognitoIdentify.({
-      ClientId: cognitoCredentials.clientId,
-      Password: password,
-      Username: email,
-      SecretHash: hash,
-    })
-    .promise();
+  // return await cognitoIdentify.({
+  //     ClientId: cognitoCredentials.clientId,
+  //     Password: password,
+  //     Username: email,
+  //     SecretHash: hash,
+  //   })
+  //   .promise();
 };
 
 export const confirm = async ({ username, code }) => {
