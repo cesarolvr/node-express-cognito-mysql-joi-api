@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 
 // Utils
 import { getParam } from "../utils/getParam.js";
@@ -46,6 +46,7 @@ export const createUser = async (req, res) => {
     ]);
     res.status(200).send({
       message: "Created with success.",
+      user: result,
     });
   } catch (err) {
     res.status(500).send({
