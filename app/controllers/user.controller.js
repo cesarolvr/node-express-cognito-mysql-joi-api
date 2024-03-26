@@ -223,7 +223,7 @@ export const confirmSignup = async (req, res) => {
 
   try {
     const result = await confirm(value);
-    console.log('result', result)
+    console.log("result", result);
     res.status(200).send({
       message: `User confirmed.`,
     });
@@ -249,9 +249,9 @@ export const resendCode = async (req, res) => {
 
   try {
     const result = await resend(value);
-    console.log('result', result)
+    console.log("result", result);
     res.status(200).send({
-      message: `Code resent.`,
+      message: `Code resent to ${result?.CodeDeliveryDetails?.Destination}.`,
     });
   } catch (error) {
     res.status(400).send({ success: false, message: error.message, error });
