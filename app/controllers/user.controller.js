@@ -9,15 +9,13 @@ import db from "../models/index.js";
 const User = db.User;
 
 // Utils
-import { signUp } from "../services/auth.service.js";
+import { signUp, confirm } from "../services/auth.service.js";
 
 // User
 export const createUser = async (req, res) => {
   // check if this user has the permission to create log in this journey?
   const payload = req?.body;
   // const session = req?.session
-
-
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(30).required(),
     email: Joi.string().required().email(),
@@ -196,7 +194,7 @@ export const getUserById = (req, res) => {
         res.status(200).send(data);
       } else {
         res.status(404).send({
-          message: `User not found or already deleted`,
+          message: `User not found or already deleted.`,
         });
       }
     })
@@ -205,4 +203,31 @@ export const getUserById = (req, res) => {
         message: err.message || "Some error occurred while getting the plan.",
       });
     });
+};
+
+export const confirmSignup = async (req, res) => {
+  const payload = req?.body;
+
+  const payloadChecked = Joi.object({
+    username: Joi.string().min(3).max(30).required(),
+    code: Joi.string().required().min(6).max(6),
+  });
+
+  const { error, value } = payloadChecked.validate(payload);
+
+  if (error) {
+    return res.status(400).send({
+      message: error.message,
+    });
+  }
+
+  try {
+    const result = await confirm(value);
+    console.log('result', result)
+    res.status(200).send({
+      message: `User confirmed.`,
+    });
+  } catch (error) {
+    res.status(400).send({ success: false, message: error.message, error });
+  }
 };

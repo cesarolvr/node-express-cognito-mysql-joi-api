@@ -24,6 +24,7 @@ import {
 
 import {
   createUser,
+  confirmSignup,
   getUserById,
   deleteUser,
   updateUser,
@@ -39,6 +40,7 @@ export default (app) => {
 
   // Auth
   router.post("/signin", signin);
+  router.post("/confirm", confirmSignup);
 
   // Plans -> Close this routes before launch
   router.post("/plan", createPlan);

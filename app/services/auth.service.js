@@ -35,6 +35,21 @@ export const signUp = async ({ email, password }, userAttributes) => {
     .promise();
 };
 
+export const confirm = async ({ username, code }) => {
+  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
+
+  const hash = generateHash(username);
+
+  return await cognitoIdentify
+    .confirmSignUp({
+      ClientId: cognitoCredentials.clientId,
+      Username: username,
+      ConfirmationCode: code,
+      SecretHash: hash,
+    })
+    .promise();
+};
+
 // export const deleteUser = async ({ email, password }, userAttributes) => {
 //   const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
 
