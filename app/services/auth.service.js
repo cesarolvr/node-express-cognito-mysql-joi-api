@@ -12,8 +12,6 @@ const cognitoCredentials = {
   secretHash: process.env.COGNITO_CLIENT_SECRET,
 };
 
-console.log("cognitoCredentials", cognitoCredentials);
-
 const generateHash = (email) => {
   return crypto
     .createHmac("SHA256", cognitoCredentials.secretHash)
@@ -26,8 +24,6 @@ export const signUp = async ({ email, password }, userAttributes) => {
 
   const hash = generateHash(email);
 
-  console.log("hash", hash);
-
   return await cognitoIdentify
     .signUp({
       ClientId: cognitoCredentials.clientId,
@@ -38,3 +34,20 @@ export const signUp = async ({ email, password }, userAttributes) => {
     })
     .promise();
 };
+
+// export const deleteUser = async ({ email, password }, userAttributes) => {
+//   const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
+
+//   const hash = generateHash(email);
+
+//   console.log("hash", hash);
+
+//   return await cognitoIdentify.deleteUser({
+//       ClientId: cognitoCredentials.clientId,
+//       Password: password,
+//       Username: email,
+//       SecretHash: hash,
+//       UserAttributes: userAttributes,
+//     })
+//     .promise();
+// };

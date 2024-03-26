@@ -55,7 +55,6 @@ export const createLog = async (req, res) => {
       journeyId,
     })
       .then((data) => {
-        console.log(data);
         res.status(201).send({
           message: "Log created",
           id,
@@ -96,7 +95,6 @@ export const getLogs = async (req, res) => {
       },
     })
       .then((data) => {
-        console.log(data);
         res.status(200).send(data);
       })
       .catch((err) => {

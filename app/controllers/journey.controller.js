@@ -73,7 +73,6 @@ export const getJourneys = (req, res) => {
     },
   })
     .then((data) => {
-      console.log(data);
       res.status(200).send(data);
     })
     .catch((err) => {
@@ -104,7 +103,6 @@ export const deleteJourney = (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send({
         message:
           err.message || "Some error occurred while deleting this journey.",

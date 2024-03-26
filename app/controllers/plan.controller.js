@@ -41,7 +41,6 @@ export const createPlan = (req, res) => {
     automaticRenew: true,
   })
     .then((data) => {
-      console.log(data);
       res.status(201).send({
         message: "Plan created",
         id,
@@ -57,7 +56,6 @@ export const createPlan = (req, res) => {
 export const getPlans = (req, res) => {
   Plan.findAll()
     .then((data) => {
-      console.log(data);
       res.status(200).send(data);
     })
     .catch((err) => {
@@ -87,7 +85,6 @@ export const deletePlan = (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send({
         message: err.message || "Some error occurred while deleting this plan.",
       });

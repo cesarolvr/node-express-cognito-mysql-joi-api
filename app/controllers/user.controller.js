@@ -15,6 +15,8 @@ import { signUp } from "../services/auth.service.js";
 export const createUser = async (req, res) => {
   // check if this user has the permission to create log in this journey?
   const payload = req?.body;
+  // const session = req?.session
+
 
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(30).required(),
@@ -44,12 +46,10 @@ export const createUser = async (req, res) => {
       { Name: "picture", Value: picture },
       { Name: "name", Value: name },
     ]);
-    console.log("result", result);
     res.status(200).send({
       message: "Created with success.",
     });
   } catch (err) {
-    console.log("err", err);
     res.status(500).send({
       message: err.message || "Some error occurred while creating this user.",
     });
