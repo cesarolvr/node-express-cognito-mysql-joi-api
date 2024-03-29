@@ -20,7 +20,7 @@ const PORT = 8080;
 
 // Database
 db.sequelize.sync({
-  force: true
+  // force: true
 });
 
 app.listen(PORT, () => {

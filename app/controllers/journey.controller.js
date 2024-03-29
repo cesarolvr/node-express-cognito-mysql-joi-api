@@ -69,7 +69,7 @@ export const getJourneys = (req, res) => {
 
   Journey.findAll({
     where: {
-      userId: userInfo.id,
+      userId: userInfo.username,
     },
   })
     .then((data) => {
@@ -88,7 +88,7 @@ export const deleteJourney = (req, res) => {
   const id = getParam(req?.params, "id");
 
   Journey.destroy({
-    where: { id, userId: userInfo.id },
+    where: { id, userId: userInfo.username },
   })
     .then((data) => {
       const wasSomethingUpdated = data;
@@ -137,7 +137,7 @@ export const updateJourney = (req, res) => {
   };
 
   Journey.update(validatedPayload, {
-    where: { id, userId: userInfo.id },
+    where: { id, userId: userInfo.username },
   })
     .then((data) => {
       const wasSomethingUpdated = data[0];
@@ -163,7 +163,7 @@ export const getJourneyById = (req, res) => {
   const id = getParam(req?.params, "id");
   const { userInfo } = req;
 
-  Journey.findOne({ where: { id, userId: userInfo.id } })
+  Journey.findOne({ where: { id, userId: userInfo.username } })
     .then((data) => {
       res.status(200).send(data);
     })
