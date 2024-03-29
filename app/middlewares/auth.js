@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 
 // Verifier that expects valid access tokens:
@@ -9,11 +9,12 @@ const verifier = CognitoJwtVerifier.create({
 });
 
 export const authMiddleware = async (req, res, next) => {
-  const token = req.headers["authorization"];
+  const accessToken = req.headers["authorization"];
 
   try {
-    const payload = await verifier.verify(token);
+    const payload = await verifier.verify(accessToken);
     req.userInfo = payload;
+    req.accessToken = accessToken
     next();
   } catch (err) {
     res

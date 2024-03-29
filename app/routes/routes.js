@@ -26,13 +26,14 @@ import {
   createUser,
   confirmSignup,
   resendCode,
-  getUserById,
+  getUser,
   deleteUser,
   updateUser,
 } from "../controllers/user.controller.js";
 
 import {
   signin,
+  signout,
   resetPassword,
   resetPasswordConfirmation,
 } from "../controllers/auth.controller.js";
@@ -45,6 +46,7 @@ export default (app) => {
 
   // Auth
   router.post("/signin", signin);
+  router.post("/signout", signout);
   router.post("/confirm", confirmSignup);
   router.post("/resend-code", resendCode);
   router.post("/reset-password", resetPassword);
@@ -57,13 +59,13 @@ export default (app) => {
   router.delete("/plan/:id", deletePlan);
   router.put("/plan/:id", updatePlan);
 
-  app.use(["/user", "/journeys", "/journey"], authMiddleware);
+  app.use(["/user", "/journeys", "/journey", "/signout"], authMiddleware);
 
   // Users
   router.post("/signup", createUser);
-  router.get("/user/:id", getUserById);
-  router.delete("/user/:id", deleteUser);
-  router.put("/user/:id", updateUser);
+  router.get("/user/", getUser);
+  router.delete("/user/", deleteUser);
+  router.put("/user/", updateUser);
 
   // Journeys
   router.post("/journey", createJourney);

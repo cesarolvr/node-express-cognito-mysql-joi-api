@@ -9,7 +9,14 @@ import db from "../models/index.js";
 const User = db.User;
 
 // Utils
-import { signUp, confirm, resend } from "../services/auth.service.js";
+import {
+  signUp,
+  confirm,
+  resend,
+  getUser as getCognitoUser,
+  updateUser as updateCognitoUser,
+  deleteUser as deleteCognitoUser,
+} from "../services/auth.service.js";
 
 // User
 export const createUser = async (req, res) => {
@@ -110,12 +117,13 @@ export const deleteUser = (req, res) => {
       });
     });
 };
-export const updateUser = (req, res) => {
+
+export const updateUser = async (req, res) => {
   const payload = req?.body;
   const id = getParam(req?.params, "id");
 
   const { userInfo } = req;
-  const isThisUserItSelf = id === userInfo.id;
+  const isThisUserItSelf = id === userInfo.username;
 
   if (!isThisUserItSelf) {
     return res.status(401).send({
@@ -141,6 +149,11 @@ export const updateUser = (req, res) => {
     ...value,
   };
 
+  // Cognito update
+  // await updateCognitoUser()
+
+
+  // Local update
   User.update(
     { validatedPayload },
     {
@@ -166,21 +179,16 @@ export const updateUser = (req, res) => {
     });
 };
 
-export const getUserById = (req, res) => {
-  const id = getParam(req?.params, "id");
+export const getUser = async (req, res) => {
 
   const { userInfo } = req;
-  const isThisUserItSelf = id === userInfo.id;
 
-  if (!isThisUserItSelf) {
-    return res.status(401).send({
-      message: "You cannot see this user",
-    });
-  }
+  // Cognito get comes here
 
+  // Local get
   User.findOne({
     where: {
-      id,
+      id: userInfo.username,
     },
   })
     .then((data) => {

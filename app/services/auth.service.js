@@ -1,6 +1,5 @@
 import AWS from "aws-sdk";
 
-// TODO: ver a necessidade de crypto e bcrypt na mesma app
 import crypto from "crypto";
 
 const awsConfig = {
@@ -47,7 +46,7 @@ export const signin = async (email, password) => {
       AuthParameters: {
         USERNAME: email,
         PASSWORD: password,
-        SECRET_HASH: hash
+        SECRET_HASH: hash,
       },
     })
     .promise();
@@ -109,6 +108,47 @@ export const resetPasswordConfirmation = async (email, newPassword, code) => {
       Password: newPassword,
       Username: email,
       SecretHash: hash,
+    })
+    .promise();
+};
+
+export const getUser = async (token) => {
+  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
+
+  return await cognitoIdentify
+    .getUser({
+      AccessToken: token,
+    })
+    .promise();
+};
+
+export const signout = async (token) => {
+  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
+
+  return await cognitoIdentify
+    .globalSignOut({
+      AccessToken: token,
+    })
+    .promise();
+};
+
+export const updateUser = async (token, userAttributes) => {
+  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
+
+  return await cognitoIdentify
+    .updateUserAttributes({
+      AccessToken: token,
+      UserAttributes: userAttributes,
+    })
+    .promise();
+};
+
+export const deleteUser = async (token) => {
+  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
+
+  return await cognitoIdentify
+    .deleteUser({
+      AccessToken: token,
     })
     .promise();
 };

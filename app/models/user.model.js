@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+
 
 export default (sequelize, Sequelize, DataTypes) => {
   const UserObject = sequelize.define(
