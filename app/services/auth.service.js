@@ -40,13 +40,17 @@ export const signin = async (email, password) => {
 
   const hash = generateHash(email);
 
-  // return await cognitoIdentify.({
-  //     ClientId: cognitoCredentials.clientId,
-  //     Password: password,
-  //     Username: email,
-  //     SecretHash: hash,
-  //   })
-  //   .promise();
+  return cognitoIdentify
+    .initiateAuth({
+      ClientId: cognitoCredentials.clientId,
+      AuthFlow: "USER_PASSWORD_AUTH",
+      AuthParameters: {
+        USERNAME: email,
+        PASSWORD: password,
+        SECRET_HASH: hash
+      },
+    })
+    .promise();
 };
 
 export const confirm = async ({ username, code }) => {
@@ -73,6 +77,37 @@ export const resend = async ({ username }) => {
     .resendConfirmationCode({
       ClientId: cognitoCredentials.clientId,
       Username: username,
+      SecretHash: hash,
+    })
+    .promise();
+};
+
+export const resetPassword = async (email) => {
+  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
+
+  const hash = generateHash(email);
+
+  return await cognitoIdentify
+    .forgotPassword({
+      ClientId: cognitoCredentials.clientId,
+      // Password: password,
+      Username: email,
+      SecretHash: hash,
+    })
+    .promise();
+};
+
+export const resetPasswordConfirmation = async (email, newPassword, code) => {
+  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
+
+  const hash = generateHash(email);
+
+  return await cognitoIdentify
+    .confirmForgotPassword({
+      ClientId: cognitoCredentials.clientId,
+      ConfirmationCode: code,
+      Password: newPassword,
+      Username: email,
       SecretHash: hash,
     })
     .promise();

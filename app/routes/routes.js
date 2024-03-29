@@ -31,7 +31,11 @@ import {
   updateUser,
 } from "../controllers/user.controller.js";
 
-import { signin } from "../controllers/auth.controller.js";
+import {
+  signin,
+  resetPassword,
+  resetPasswordConfirmation,
+} from "../controllers/auth.controller.js";
 import { authMiddleware } from "../middlewares/auth.js";
 
 import { Router } from "express";
@@ -43,6 +47,8 @@ export default (app) => {
   router.post("/signin", signin);
   router.post("/confirm", confirmSignup);
   router.post("/resend-code", resendCode);
+  router.post("/reset-password", resetPassword);
+  router.post("/reset-password-confirmation", resetPasswordConfirmation);
 
   // Plans -> Close this routes before launch
   router.post("/plan", createPlan);
