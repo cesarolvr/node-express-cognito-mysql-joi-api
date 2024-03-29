@@ -44,7 +44,7 @@ export const createLog = async (req, res) => {
   }
 
   const { userId } = JourneyTobeEdited;
-  const thisJourneyBelongsToThisUser = userId === userInfo.id;
+  const thisJourneyBelongsToThisUser = userId === userInfo.username;
 
   if (thisJourneyBelongsToThisUser) {
     Log.create({
@@ -86,7 +86,7 @@ export const getLogs = async (req, res) => {
   }
 
   const { userId } = JourneyTobeEdited;
-  const thisJourneyBelongsToThisUser = userId === userInfo.id;
+  const thisJourneyBelongsToThisUser = userId === userInfo.username;
 
   if (thisJourneyBelongsToThisUser) {
     Log.findAll({
@@ -125,7 +125,7 @@ export const deleteLog = async (req, res) => {
   }
 
   const { userId } = JourneyTobeEdited;
-  const thisJourneyBelongsToThisUser = userId === userInfo.id;
+  const thisJourneyBelongsToThisUser = userId === userInfo.username;
 
   if (thisJourneyBelongsToThisUser) {
     Log.destroy({
@@ -174,7 +174,7 @@ export const updateLog = async (req, res) => {
   }
 
   const { userId } = JourneyTobeEdited;
-  const thisJourneyBelongsToThisUser = userId === userInfo.id;
+  const thisJourneyBelongsToThisUser = userId === userInfo.username;
 
   if (!thisJourneyBelongsToThisUser) {
     res.status(401).send({
@@ -239,7 +239,7 @@ export const getLogById = async (req, res) => {
   }
 
   const { userId } = JourneyTobeEdited;
-  const thisJourneyBelongsToThisUser = userId === userInfo.id;
+  const thisJourneyBelongsToThisUser = userId === userInfo.username;
 
   if (!thisJourneyBelongsToThisUser) {
     res.status(401).send({
