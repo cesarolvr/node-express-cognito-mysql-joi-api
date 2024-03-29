@@ -53,15 +53,15 @@ export const signin = async (email, password) => {
     .promise();
 };
 
-export const confirm = async ({ username, code }) => {
+export const confirm = async ({ email, code }) => {
   const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
 
-  const hash = generateHash(username);
+  const hash = generateHash(email);
 
-  return await cognitoIdentify
+  return cognitoIdentify
     .confirmSignUp({
       ClientId: cognitoCredentials.clientId,
-      Username: username,
+      Username: email,
       ConfirmationCode: code,
       SecretHash: hash,
     })

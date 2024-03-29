@@ -40,7 +40,7 @@ export const createJourney = (req, res) => {
     status: status || "IN PROGRESS",
     icon,
     type,
-    userId: userInfo.id,
+    userId: userInfo.username,
     isPublic: isPublic || false,
   })
     .then((data) => {

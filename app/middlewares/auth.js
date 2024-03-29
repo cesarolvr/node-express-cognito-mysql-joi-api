@@ -1,23 +1,26 @@
 import jwt from "jsonwebtoken";
-import redis from "redis";
+import { CognitoJwtVerifier } from "aws-jwt-verify";
 
-export const authMiddleware = (req, res, next) => {
+// Verifier that expects valid access tokens:
+const verifier = CognitoJwtVerifier.create({
+  userPoolId: process.env.COGNITO_USER_POOL_ID,
+  tokenUse: "access",
+  clientId: process.env.COGNITO_CLIENT_ID,
+});
+
+export const authMiddleware = async (req, res, next) => {
   const token = req.headers["authorization"];
 
-  
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
-    if (err) {
-      res
-        .status(403)
-        .send({
-          message: "Invalid token",
-        })
-        .end();
-      return;
-    }
-
-    req.userInfo = userInfo;
+  try {
+    const payload = await verifier.verify(token);
+    req.userInfo = payload;
     next();
-  });
+  } catch (err) {
+    res
+      .status(403)
+      .send({
+        message: "Invalid token",
+      })
+      .end();
+  }
 };

@@ -13,9 +13,7 @@ import { signUp, confirm, resend } from "../services/auth.service.js";
 
 // User
 export const createUser = async (req, res) => {
-  // check if this user has the permission to create log in this journey?
   const payload = req?.body;
-  // const session = req?.session
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(30).required(),
     email: Joi.string().required().email(),
@@ -39,14 +37,27 @@ export const createUser = async (req, res) => {
   const { name, email, password, picture } = value;
 
   try {
-    const result = await signUp({ email, password }, [
+    // Create on Cognito
+    const cognitoUser = await signUp({ email, password }, [
       { Name: "email", Value: email },
       { Name: "picture", Value: picture },
       { Name: "name", Value: name },
     ]);
+
+    // Create locally
+    const localUser = await User.create({
+      id: cognitoUser.UserSub,
+      name,
+      email,
+      confirmed: cognitoUser.UserConfirmed,
+    });
+
     res.status(200).send({
       message: "Created with success.",
-      user: result,
+      user: {
+        1: cognitoUser,
+        2: localUser,
+      },
     });
   } catch (err) {
     res.status(500).send({
@@ -63,27 +74,6 @@ export const createUser = async (req, res) => {
   //     message: "This email is already used",
   //   });
   // }
-
-  // const id = uuidv4();
-
-  // User.create({
-  //   id,
-  //   username,
-  //   email,
-  //   password,
-  // })
-  //   .then((data) => {
-  //     console.log("aaa", data);
-  //     res.status(201).send({
-  //       message: "User created",
-  //       id,
-  //     });
-  //   })
-  //   .catch((err) => {
-  //     res.status(500).send({
-  //       message: err.message || "Some error occurred while creating the Plan.",
-  //     });
-  //   });
 };
 
 export const deleteUser = (req, res) => {
@@ -151,9 +141,12 @@ export const updateUser = (req, res) => {
     ...value,
   };
 
-  User.update(validatedPayload, {
-    where: { id },
-  })
+  User.update(
+    { validatedPayload },
+    {
+      where: { id },
+    }
+  )
     .then((data) => {
       const wasSomethingUpdated = data[0];
       if (wasSomethingUpdated) {
@@ -210,7 +203,7 @@ export const confirmSignup = async (req, res) => {
   const payload = req?.body;
 
   const payloadChecked = Joi.object({
-    username: Joi.string().min(3).max(30).required(),
+    email: Joi.string().required().email({ minDomainSegments: 2 }),
     code: Joi.string().required().min(6).max(6),
   });
 
@@ -224,7 +217,16 @@ export const confirmSignup = async (req, res) => {
 
   try {
     const result = await confirm(value);
-    console.log("result", result);
+
+    if (!result?.error) {
+      User.update(
+        { confirmed: 1 },
+        {
+          where: { email: value?.email },
+        }
+      );
+    }
+
     res.status(200).send({
       message: `User confirmed.`,
     });
