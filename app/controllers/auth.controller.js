@@ -44,10 +44,10 @@ export const signin = async (req, res) => {
 };
 
 export const signout = async (req, res) => {
-  const { accessToken } = req;
+  const { token } = req?.headers;
 
   try {
-    const result = await signoutService(accessToken);
+    const result = await signoutService(token);
     res.status(200).send({
       message: "Disconnected with success.",
       user: result,

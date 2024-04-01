@@ -59,7 +59,7 @@ export default (app) => {
   router.delete("/plan/:id", deletePlan);
   router.put("/plan/:id", updatePlan);
 
-  app.use(["/user", "/journeys", "/journey", "/signout"], authMiddleware);
+  app.use(["/user", "/journeys", "/journey"], authMiddleware);
 
   // Users
   router.post("/signup", createUser);

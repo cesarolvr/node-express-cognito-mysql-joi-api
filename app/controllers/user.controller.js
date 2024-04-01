@@ -1,5 +1,5 @@
 import Joi from "joi";
-// import { v4 as uuidv4 } from "uuid";
+import AWS from "aws-sdk";
 
 // Utils
 import { getParam } from "../utils/getParam.js";
@@ -17,6 +17,10 @@ import {
   updateUser as updateCognitoUser,
   deleteUser as deleteCognitoUser,
 } from "../services/auth.service.js";
+
+const awsConfig = {
+  region: process.env.COGNITO_REGION,
+};
 
 // User
 export const createUser = async (req, res) => {
@@ -71,16 +75,6 @@ export const createUser = async (req, res) => {
       message: err.message || "Some error occurred while creating this user.",
     });
   }
-
-  // const userExists = await User.findOne({
-  //   where: { email },
-  // });
-
-  // if (userExists) {
-  //   return res.status(400).send({
-  //     message: "This email is already used",
-  //   });
-  // }
 };
 
 export const deleteUser = (req, res) => {
@@ -152,7 +146,6 @@ export const updateUser = async (req, res) => {
   // Cognito update
   // await updateCognitoUser()
 
-
   // Local update
   User.update(
     { validatedPayload },
@@ -180,31 +173,37 @@ export const updateUser = async (req, res) => {
 };
 
 export const getUser = async (req, res) => {
+  const { userInfo, accessToken } = req;
 
-  const { userInfo } = req;
+  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
 
-  // Cognito get comes here
+  try {
+    // Remote get
+    const users = await cognitoIdentify
+      .getUser({
+        AccessToken: accessToken,
+      })
+      .promise();
 
-  // Local get
-  User.findOne({
-    where: {
-      id: userInfo.username,
-    },
-  })
-    .then((data) => {
-      if (data) {
-        res.status(200).send(data);
-      } else {
-        res.status(404).send({
-          message: `User not found or already deleted.`,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while getting the plan.",
+    if (users.Username) {
+      // Local get
+      const localUser = await User.findOne({
+        where: {
+          id: userInfo.username,
+        },
       });
+
+      if (localUser) {
+        res.status(200).send({ ...localUser, ...users });
+      } else {
+        res.status(200).send({ ...users });
+      }
+    }
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while getting this user.",
     });
+  }
 };
 
 export const confirmSignup = async (req, res) => {
