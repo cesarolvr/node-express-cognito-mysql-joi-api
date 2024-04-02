@@ -18,6 +18,9 @@ import {
   deleteUser as deleteCognitoUser,
 } from "../services/auth.service.js";
 
+// Services
+import { isAuthenticated as isAuthenticatedService } from "../services/auth.service.js";
+
 const awsConfig = {
   region: process.env.COGNITO_REGION,
 };
@@ -77,11 +80,22 @@ export const createUser = async (req, res) => {
   }
 };
 
-export const deleteUser = (req, res) => {
+export const deleteUser = async (req, res) => {
   const id = getParam(req?.params, "id");
 
-  const { userInfo } = req;
-  const isThisUserItSelf = id === userInfo.id;
+  const { userInfo, accessToken } = req;
+  const isThisUserItSelf = id === userInfo.username;
+
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(401).send({
+      message: "User not authenticated.",
+    });
+    return;
+  }
+
+  // COGNITO DELETION COMES HERE
 
   if (!isThisUserItSelf) {
     return res.status(401).send({
@@ -116,8 +130,19 @@ export const updateUser = async (req, res) => {
   const payload = req?.body;
   const id = getParam(req?.params, "id");
 
-  const { userInfo } = req;
+  const { userInfo, accessToken } = req;
   const isThisUserItSelf = id === userInfo.username;
+
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(401).send({
+      message: "User not authenticated.",
+    });
+    return;
+  }
+
+  // COGNITO UPDATE COMES HERE
 
   if (!isThisUserItSelf) {
     return res.status(401).send({
@@ -142,9 +167,6 @@ export const updateUser = async (req, res) => {
   const validatedPayload = {
     ...value,
   };
-
-  // Cognito update
-  // await updateCognitoUser()
 
   // Local update
   User.update(

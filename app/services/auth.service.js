@@ -23,7 +23,7 @@ export const signUp = async ({ email, password }, userAttributes) => {
 
   const hash = generateHash(email);
 
-  return await cognitoIdentify
+  return cognitoIdentify
     .signUp({
       ClientId: cognitoCredentials.clientId,
       Password: password,
