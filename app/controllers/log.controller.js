@@ -9,13 +9,23 @@ const Journey = db.Journey;
 // Utils
 import { getParam } from "../utils/getParam.js";
 
+// Services
+import { isAuthenticated as isAuthenticatedService } from "../services/auth.service.js";
+
 // Logs
 export const createLog = async (req, res) => {
-  // check if this user has the permission to create log in this journey?
-  const { userInfo } = req;
-
+  const { userInfo, accessToken } = req;
   const payload = req?.body;
   const journeyId = getParam(req?.params, "journeyid");
+
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(401).send({
+      message: "User not authenticated.",
+    });
+    return;
+  }
 
   const payloadChecked = Joi.object({
     title: Joi.string().min(3).max(20).required(),
@@ -74,7 +84,16 @@ export const createLog = async (req, res) => {
 
 export const getLogs = async (req, res) => {
   const journeyId = getParam(req?.params, "journeyid");
-  const { userInfo } = req;
+  const { userInfo, accessToken } = req;
+
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(401).send({
+      message: "User not authenticated.",
+    });
+    return;
+  }
 
   const JourneyTobeEdited = await Journey.findByPk(journeyId);
 
@@ -113,7 +132,16 @@ export const deleteLog = async (req, res) => {
   const journeyId = getParam(req?.params, "journeyid");
   const logId = getParam(req?.params, "logid");
 
-  const { userInfo } = req;
+  const { userInfo, accessToken } = req;
+
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(401).send({
+      message: "User not authenticated.",
+    });
+    return;
+  }
 
   const JourneyTobeEdited = await Journey.findByPk(journeyId);
 
@@ -162,7 +190,16 @@ export const updateLog = async (req, res) => {
   const journeyId = getParam(req?.params, "journeyid");
   const logId = getParam(req?.params, "logid");
 
-  const { userInfo } = req;
+  const { userInfo, accessToken } = req;
+
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(401).send({
+      message: "User not authenticated.",
+    });
+    return;
+  }
 
   const JourneyTobeEdited = await Journey.findByPk(journeyId);
 

@@ -153,6 +153,26 @@ export const deleteUser = async (token) => {
     .promise();
 };
 
+export const isAuthenticated = async (token) => {
+  if (!token) return false;
+
+  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
+
+  try {
+    const user = await cognitoIdentify
+      .getUser({
+        AccessToken: token,
+      })
+      .promise();
+
+    if (user) return true;
+    return false;
+  } catch (err) {
+    console.log("err", err);
+    return false;
+  }
+};
+
 // export const deleteUser = async ({ email, password }, userAttributes) => {
 //   const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
 

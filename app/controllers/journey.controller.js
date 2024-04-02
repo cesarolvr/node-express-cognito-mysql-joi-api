@@ -8,11 +8,22 @@ const Journey = db.Journey;
 // Utils
 import { getParam } from "../utils/getParam.js";
 
-// Journey
-export const createJourney = (req, res) => {
-  const payload = req?.body;
+// Services
+import { isAuthenticated as isAuthenticatedService } from "../services/auth.service.js";
 
-  const { userInfo } = req;
+// Journey
+export const createJourney = async (req, res) => {
+  const payload = req?.body;
+  const { userInfo, accessToken } = req;
+
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(401).send({
+      message: "User not authenticated.",
+    });
+    return;
+  }
 
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(140).required(),
@@ -64,8 +75,16 @@ export const createJourney = (req, res) => {
     });
 };
 
-export const getJourneys = (req, res) => {
-  const { userInfo } = req;
+export const getJourneys = async (req, res) => {
+  const { userInfo, accessToken } = req;
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(401).send({
+      message: "User not authenticated.",
+    });
+    return;
+  }
 
   Journey.findAll({
     where: {
@@ -83,9 +102,18 @@ export const getJourneys = (req, res) => {
     });
 };
 
-export const deleteJourney = (req, res) => {
-  const { userInfo } = req;
+export const deleteJourney = async (req, res) => {
+  const { userInfo, accessToken } = req;
   const id = getParam(req?.params, "id");
+
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(401).send({
+      message: "User not authenticated.",
+    });
+    return;
+  }
 
   Journey.destroy({
     where: { id, userId: userInfo.username },
@@ -110,11 +138,19 @@ export const deleteJourney = (req, res) => {
     });
 };
 
-export const updateJourney = (req, res) => {
+export const updateJourney = async (req, res) => {
   const payload = req?.body;
+  const { userInfo, accessToken } = req;
   const id = getParam(req?.params, "id");
 
-  const { userInfo } = req;
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(401).send({
+      message: "User not authenticated.",
+    });
+    return;
+  }
 
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(140),
@@ -159,13 +195,30 @@ export const updateJourney = (req, res) => {
     });
 };
 
-export const getJourneyById = (req, res) => {
+export const getJourneyById = async (req, res) => {
   const id = getParam(req?.params, "id");
-  const { userInfo } = req;
+  const { userInfo, accessToken } = req;
+
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(400).send({
+      message: "User not authenticated.",
+    });
+
+    return;
+  }
 
   Journey.findOne({ where: { id, userId: userInfo.username } })
     .then((data) => {
-      res.status(200).send(data);
+      console.log("data", data);
+      if (data) {
+        res.status(200).send(data);
+      } else {
+        res.status(204).send({
+          message: "No journey found.",
+        });
+      }
     })
     .catch((err) => {
       res.status(500).send({
