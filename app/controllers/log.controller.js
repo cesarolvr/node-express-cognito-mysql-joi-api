@@ -264,7 +264,16 @@ export const getLogById = async (req, res) => {
   const journeyId = getParam(req?.params, "journeyid");
   const logId = getParam(req?.params, "logid");
 
-  const { userInfo } = req;
+  const { userInfo, accessToken } = req;
+
+  const isAuthenticated = await isAuthenticatedService(accessToken);
+
+  if (!isAuthenticated) {
+    res.status(401).send({
+      message: "User not authenticated.",
+    });
+    return;
+  }
 
   const JourneyTobeEdited = await Journey.findByPk(journeyId);
 
