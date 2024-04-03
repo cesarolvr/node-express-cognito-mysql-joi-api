@@ -10,7 +10,7 @@ const Journey = db.Journey;
 import { getParam } from "../utils/getParam.js";
 
 // Services
-import { isAuthenticated as isAuthenticatedService } from "../services/auth.service.js";
+import { isAuthenticated as isAuthenticatedService } from "../services/cognito.service.js";
 
 // Logs
 export const createLog = async (req, res) => {

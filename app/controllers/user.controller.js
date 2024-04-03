@@ -16,10 +16,10 @@ import {
   getUser as getCognitoUser,
   updateUser as updateCognitoUser,
   deleteUser as deleteCognitoUser,
-} from "../services/auth.service.js";
+} from "../services/cognito.service.js";
 
 // Services
-import { isAuthenticated as isAuthenticatedService } from "../services/auth.service.js";
+import { isAuthenticated as isAuthenticatedService } from "../services/cognito.service.js";
 
 const awsConfig = {
   region: process.env.COGNITO_REGION,
@@ -130,8 +130,7 @@ export const updateUser = async (req, res) => {
   const payload = req?.body;
   const id = getParam(req?.params, "id");
 
-  const { userInfo, accessToken } = req;
-  const isThisUserItSelf = id === userInfo.username;
+  const { accessToken } = req;
 
   const isAuthenticated = await isAuthenticatedService(accessToken);
 
@@ -142,18 +141,10 @@ export const updateUser = async (req, res) => {
     return;
   }
 
-  // COGNITO UPDATE COMES HERE
-
-  if (!isThisUserItSelf) {
-    return res.status(401).send({
-      message: "You cannot update this user",
-    });
-  }
-
   const payloadChecked = Joi.object({
-    username: Joi.string().min(3).max(30).required(),
-    email: Joi.string().required().email({ minDomainSegments: 2 }),
-    password: Joi.string().min(8).max(30),
+    name: Joi.string().min(3).max(30),
+    email: Joi.string().email({ minDomainSegments: 2 }).allow(""),
+    picture: Joi.string().uri().allow(""),
   });
 
   const { error, value } = payloadChecked.validate(payload);
@@ -164,48 +155,37 @@ export const updateUser = async (req, res) => {
     });
   }
 
-  const validatedPayload = {
-    ...value,
-  };
+  const formattedValue = Object.keys(value).map((item) => {
+    return {
+      Name: item,
+      Value: value[item],
+    };
+  });
 
-  // Local update
-  User.update(
-    { validatedPayload },
-    {
-      where: { id },
-    }
-  )
-    .then((data) => {
-      const wasSomethingUpdated = data[0];
-      if (wasSomethingUpdated) {
-        res.status(200).send({
-          message: "Updated with success",
-        });
-      } else {
-        res.status(404).send({
-          message: "Plan not found",
-        });
+  try {
+    await updateCognitoUser(accessToken, formattedValue);
+
+    await User.update(
+      { value },
+      {
+        where: { id },
       }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while deleting this plan.",
-      });
+    );
+
+    res.status(200).send({ message: "User profile updated." });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while updating this user.",
     });
+  }
 };
 
 export const getUser = async (req, res) => {
   const { userInfo, accessToken } = req;
 
-  const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
-
   try {
     // Remote get
-    const users = await cognitoIdentify
-      .getUser({
-        AccessToken: accessToken,
-      })
-      .promise();
+    const users = await getCognitoUser(accessToken);
 
     if (users.Username) {
       // Local get

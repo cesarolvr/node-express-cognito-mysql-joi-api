@@ -10,7 +10,7 @@ import {
   signout as signoutService,
   resetPassword as resetPasswordService,
   resetPasswordConfirmation as resetPasswordConfirmationService,
-} from "../services/auth.service.js";
+} from "../services/cognito.service.js";
 
 // Voltar token de login logo após criar o usuário já automaticamente
 // Signin

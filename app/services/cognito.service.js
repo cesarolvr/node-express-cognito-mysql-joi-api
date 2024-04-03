@@ -115,7 +115,7 @@ export const resetPasswordConfirmation = async (email, newPassword, code) => {
 export const getUser = async (token) => {
   const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
 
-  return await cognitoIdentify
+  return cognitoIdentify
     .getUser({
       AccessToken: token,
     })
@@ -132,10 +132,10 @@ export const signout = async (token) => {
     .promise();
 };
 
-export const updateUser = async (token, userAttributes) => {
+export const updateUser = (token, userAttributes) => {
   const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
 
-  return await cognitoIdentify
+  return cognitoIdentify
     .updateUserAttributes({
       AccessToken: token,
       UserAttributes: userAttributes,
@@ -143,10 +143,10 @@ export const updateUser = async (token, userAttributes) => {
     .promise();
 };
 
-export const deleteUser = async (token) => {
+export const deleteUser = (token) => {
   const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
 
-  return await cognitoIdentify
+  return cognitoIdentify
     .deleteUser({
       AccessToken: token,
     })
