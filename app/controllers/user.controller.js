@@ -81,10 +81,7 @@ export const createUser = async (req, res) => {
 };
 
 export const deleteUser = async (req, res) => {
-  const id = getParam(req?.params, "id");
-
   const { userInfo, accessToken } = req;
-  const isThisUserItSelf = id === userInfo.username;
 
   const isAuthenticated = await isAuthenticatedService(accessToken);
 
@@ -95,35 +92,38 @@ export const deleteUser = async (req, res) => {
     return;
   }
 
-  // COGNITO DELETION COMES HERE
+  try {
+    await deleteCognitoUser(accessToken);
 
-  if (!isThisUserItSelf) {
-    return res.status(401).send({
-      message: "You cannot delete this user",
+    await User.destroy({
+      where: { id: userInfo.username },
+    });
+
+    return res.status(200).send({
+      message: "User deleted with success",
+    });
+  } catch (err) {
+    return res.status(500).send({
+      message: err.message || "Some error occurred while deleting this user.",
     });
   }
 
-  User.destroy({
-    where: { id },
-  })
-    .then((data) => {
-      const wasSomethingUpdated = data;
-      if (wasSomethingUpdated === 1) {
-        res.status(200).send({
-          message: "Deleted with success",
-        });
-      } else {
-        res.status(404).send({
-          message: "Plan not deleted or already deleted",
-        });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).send({
-        message: err.message || "Some error occurred while deleting this plan.",
-      });
-    });
+  // COGNITO DELETION COMES HERE
+
+  // .then((data) => {
+  //   const wasSomethingUpdated = data;
+  //   if (wasSomethingUpdated === 1) {
+  //     res.status(200).send({
+  //       message: "Deleted with success",
+  //     });
+  //   } else {
+  //     res.status(404).send({
+  //       message: "Plan not deleted or already deleted",
+  //     });
+  //   }
+  // })
+  // .catch((err) => {
+  // });
 };
 
 export const updateUser = async (req, res) => {

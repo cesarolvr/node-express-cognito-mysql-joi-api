@@ -172,20 +172,3 @@ export const isAuthenticated = async (token) => {
     return false;
   }
 };
-
-// export const deleteUser = async ({ email, password }, userAttributes) => {
-//   const cognitoIdentify = new AWS.CognitoIdentityServiceProvider(awsConfig);
-
-//   const hash = generateHash(email);
-
-//   console.log("hash", hash);
-
-//   return await cognitoIdentify.deleteUser({
-//       ClientId: cognitoCredentials.clientId,
-//       Password: password,
-//       Username: email,
-//       SecretHash: hash,
-//       UserAttributes: userAttributes,
-//     })
-//     .promise();
-// };
