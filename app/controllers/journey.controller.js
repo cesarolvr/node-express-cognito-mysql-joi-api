@@ -31,7 +31,7 @@ export const createJourney = async (req, res) => {
     icon: Joi.string().allow(""),
     type: Joi.string().allow(""),
     isPublic: Joi.boolean(),
-    seasonality: Joi.number().required()
+    seasonality: Joi.number()
   });
 
   const { error, value } = payloadChecked.validate(payload);
@@ -42,7 +42,7 @@ export const createJourney = async (req, res) => {
     });
   }
 
-  const { name, status, icon, type, isPublic } = value;
+  const { name, status, icon, type, isPublic, seasonality } = value;
 
   const id = uuidv4();
 
@@ -54,6 +54,7 @@ export const createJourney = async (req, res) => {
     type,
     userId: userInfo.username,
     isPublic: isPublic || false,
+    seasonality,
   })
     .then((data) => {
       const wasSomethingUpdated = data;
