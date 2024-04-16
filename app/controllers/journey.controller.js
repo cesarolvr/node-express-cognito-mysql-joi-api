@@ -31,6 +31,7 @@ export const createJourney = async (req, res) => {
     icon: Joi.string().allow(""),
     type: Joi.string().allow(""),
     isPublic: Joi.boolean(),
+    seasonality: Joi.number().required()
   });
 
   const { error, value } = payloadChecked.validate(payload);
@@ -154,10 +155,11 @@ export const updateJourney = async (req, res) => {
 
   const payloadChecked = Joi.object({
     name: Joi.string().min(3).max(140),
-    price: Joi.number(),
-    duration: Joi.number(),
-    trialTime: Joi.number(),
-    automaticRenew: Joi.boolean(),
+    status: Joi.string(),
+    icon: Joi.string(),
+    type: Joi.string(),
+    isPublic: Joi.boolean(),
+    seasonality: Joi.number()
   });
 
   const { error, value } = payloadChecked.validate(payload);
